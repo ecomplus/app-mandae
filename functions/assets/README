@@ -1,0 +1,2 @@
+JS scripts (and other assets) to be minified on build and read as text on function.
+Minified script will be written to `./dist/{name}.min.js`.
