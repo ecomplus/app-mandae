@@ -7,8 +7,8 @@
 
 const app = {
   app_id: 124677,
-  title: 'My Awesome E-Com Plus App',
-  slug: 'my-awesome-app',
+  title: 'Mandaê',
+  slug: 'mandae',
   type: 'external',
   state: 'active',
   authentication: true,
