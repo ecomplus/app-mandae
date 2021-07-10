@@ -1,3 +1,5 @@
+const axios = require('axios') 
+
 exports.post = ({ appSdk }, req, res) => {
   /**
    * Treat `params` and (optionally) `application` from request body to properly mount the `response`.
@@ -29,6 +31,35 @@ exports.post = ({ appSdk }, req, res) => {
     res.send(response)
     return
   }
+
+  const mandaeUrl = 'https://e8798d3b868356ee779846b74ae39445.m.pipedream.net'
+
+  const resource = '/v3/postalcodes/35700259/rates'
+
+  const payload = {
+    items: [
+      {
+        declaredValue: 400.00,
+        weight: 0.138,
+        height: 0.7,
+        width: 7,
+        length: 14,
+        quantity: 2
+      }
+    ]
+  } 
+
+  return axios
+    .post(mandaeUrl + resource, payload)
+    .then(response => {
+      console.log('response status: ', response.status)
+      if (response.status === 200) {
+        res.send(response.data)
+        return
+      }
+    })
+
+
 
   /* DO THE STUFF HERE TO FILL RESPONSE OBJECT WITH SHIPPING SERVICES */
 
