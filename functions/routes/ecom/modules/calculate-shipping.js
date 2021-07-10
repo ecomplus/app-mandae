@@ -34,7 +34,8 @@ exports.post = ({ appSdk }, req, res) => {
 
   const mandaeUrl = 'https://e8798d3b868356ee779846b74ae39445.m.pipedream.net'
 
-  const resource = '/v3/postalcodes/35700259/rates'
+
+  const resource = `/v3/postalcodes/${params.to.zip}/rates`
 
   const payload = {
     items: [
@@ -49,12 +50,32 @@ exports.post = ({ appSdk }, req, res) => {
     ]
   } 
 
+  // Precisamos saber algumas adicionais como o 'from'
+
   return axios
     .post(mandaeUrl + resource, payload)
-    .then(response => {
-      console.log('response status: ', response.status)
-      if (response.status === 200) {
-        res.send(response.data)
+    .then(({ data, status }) => {
+      if (status === 200) {
+        for (shipping of data.data.shippingServices) {
+          response.shipping_services.push({
+            label: shipping.name,
+            carrier: shipping.name,
+            service_name: 'Mandae',
+            shipping_line: {
+              price: shipping.price,
+              total_price: shipping.price,
+              discount: 0,
+              delivery_time: {
+                days: shipping.days,
+                working_days: true
+              }
+            },
+            flags: ['mandae-ws']
+          })
+          console.log(shipping)
+        }
+
+        res.send(response)
         return
       }
     })
