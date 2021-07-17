@@ -90,6 +90,9 @@ exports.post = ({ appSdk }, req, res) => {
             },
             from: {
               zip: originZip
+            },
+            to: {
+              zip: data.data ? data.data.postalCode : params.to.zip
             }
           },
           flags: ['mandae-ws']
