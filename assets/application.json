@@ -31,7 +31,17 @@
     "products/price": [],
     "products/variations/price": []
   },
-  "admin_settings": {},
+  "admin_settings": {
+    "mandae_token": {
+      "schema": {
+        "type": "string",
+        "maxLength": 255,
+        "title": "Mandaê API Token",
+        "description": "Seus tokens da API podem ser acessados nas Configurações da sua conta → API dentro do aplicativo web da mandaê."
+      },
+      "hide": true
+    }
+  },
   "auth_callback_uri": "https://us-central1-ecom-mandae.cloudfunctions.net/app/ecom/auth-callback",
   "version": "1.0.0"
 }
