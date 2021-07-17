@@ -87,6 +87,9 @@ exports.post = ({ appSdk }, req, res) => {
             delivery_time: {
               days: shipping.days,
               working_days: true
+            },
+            from: {
+              zip: originZip
             }
           },
           flags: ['mandae-ws']
