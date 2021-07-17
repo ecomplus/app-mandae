@@ -32,6 +32,7 @@ exports.post = ({ appSdk }, req, res) => {
     return
   }
 
+  const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
 
 
@@ -52,13 +53,14 @@ exports.post = ({ appSdk }, req, res) => {
 
   // Precisamos saber algumas adicionais como o 'from'
 
+  console.log('[o token enviado foi]', mandaeToken)
   return axios(
     {
       url: mandaeUrl + resource,
       method: 'POST',
       data: payload,
       headers: {
-        Authorization: 'b5ef2d6c6109a7114fcb8f180dc26db4'
+        Authorization: mandaeToken
       }
     }
   ).then(({ data, status }) => {
