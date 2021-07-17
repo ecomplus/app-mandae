@@ -1,4 +1,4 @@
-const axios = require('axios') 
+const axios = require('axios')
 
 exports.post = ({ appSdk }, req, res) => {
   /**
@@ -32,7 +32,7 @@ exports.post = ({ appSdk }, req, res) => {
     return
   }
 
-  const mandaeUrl = 'https://e8798d3b868356ee779846b74ae39445.m.pipedream.net'
+  const mandaeUrl = 'https://api.mandae.com.br'
 
 
   const resource = `/v3/postalcodes/${params.to.zip}/rates`
@@ -48,39 +48,57 @@ exports.post = ({ appSdk }, req, res) => {
         quantity: 2
       }
     ]
-  } 
+  }
 
   // Precisamos saber algumas adicionais como o 'from'
 
-  return axios
-    .post(mandaeUrl + resource, payload)
-    .then(({ data, status }) => {
-      if (status === 200) {
-        for (shipping of data.data.shippingServices) {
-          response.shipping_services.push({
-            label: shipping.name,
-            carrier: shipping.name,
-            service_name: 'Mandae',
-            shipping_line: {
-              price: shipping.price,
-              total_price: shipping.price,
-              discount: 0,
-              delivery_time: {
-                days: shipping.days,
-                working_days: true
-              }
-            },
-            flags: ['mandae-ws']
-          })
-          console.log(shipping)
-        }
-
-        res.send(response)
-        return
+  return axios(
+    {
+      url: mandaeUrl + resource,
+      method: 'POST',
+      data: payload,
+      headers: {
+        Authorization: 'b5ef2d6c6109a7114fcb8f180dc26db4'
       }
+    }
+  ).then(({ data, status }) => {
+    if (status === 200) {
+      for (shipping of data.data.shippingServices) {
+        response.shipping_services.push({
+          label: shipping.name,
+          carrier: shipping.name,
+          service_name: 'Mandae',
+          shipping_line: {
+            price: shipping.price,
+            total_price: shipping.price,
+            discount: 0,
+            delivery_time: {
+              days: shipping.days,
+              working_days: true
+            }
+          },
+          flags: ['mandae-ws']
+        })
+      }
+      res.send(response)
+      return
+    } else {
+      const err = new Error('Invalid Mandae calculate response')
+      err.response = { data, status }
+      throw err
+    }
+  }).catch(error => {
+    if (error && error.response) {
+      return res.status(error.response.status).send({
+        error: 'CALCULATE_SHIPPING_ERROR',
+        message: error.response.data.error.message
+      })
+    }
+    return res.status(409).send({
+      error: 'CALCULATE_FAILED',
+      message: error.message
     })
-
-
+  })
 
   /* DO THE STUFF HERE TO FILL RESPONSE OBJECT WITH SHIPPING SERVICES */
 
