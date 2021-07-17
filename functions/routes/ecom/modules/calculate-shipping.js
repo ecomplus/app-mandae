@@ -53,7 +53,6 @@ exports.post = ({ appSdk }, req, res) => {
 
   // Precisamos saber algumas adicionais como o 'from'
 
-  console.log('[o token enviado foi]', mandaeToken)
   return axios(
     {
       url: mandaeUrl + resource,

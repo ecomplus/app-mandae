@@ -139,36 +139,17 @@ const app = {
   
   admin_settings: {
     /**
-     * JSON schema based fields to be configured by merchant and saved to app `data` / `hidden_data`, such as:
-     
-     webhook_uri: {
-       schema: {
-         type: 'string',
-         maxLength: 255,
-         format: 'uri',
-         title: 'Notifications URI',
-         description: 'Unique notifications URI available on your Custom App dashboard'
-       },
-       hide: true
-     },
-     token: {
-       schema: {
-         type: 'string',
-         maxLength: 50,
-         title: 'App token'
-       },
-       hide: true
-     },
-     opt_in: {
-       schema: {
-         type: 'boolean',
-         default: false,
-         title: 'Some config option'
-       },
-       hide: false
-     },
-     
+     * JSON schema based fields to be configured by merchant and saved to app `data` / `hidden_data`, such as:     
      */
+    mandae_token: {
+      schema: {
+        type: 'string',
+        maxLength: 255,
+        title: 'Mandaê API Token',
+        description: 'Seus tokens da API podem ser acessados nas Configurações da sua conta → API dentro do aplicativo web da mandaê.'
+      },
+      hide: true
+    }
   }
 }
 
