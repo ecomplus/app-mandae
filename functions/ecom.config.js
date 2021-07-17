@@ -141,6 +141,15 @@ const app = {
     /**
      * JSON schema based fields to be configured by merchant and saved to app `data` / `hidden_data`, such as:     
      */
+    zip: {
+      schema: {
+        type: 'string',
+        maxLength: 9,
+        pattern: '^[0-9]{5}-?[0-9]{3}$',
+        title: 'CEP de origem',
+        description: 'Código postal do remetente para cálculo do frete cadastrado no Mandaê'
+      }
+    },
     mandae_token: {
       schema: {
         type: 'string',
