@@ -1,5 +1,45 @@
 const axios = require('axios')
 
+
+const calcWeight = (item) => {
+  const unit = item.weight.unit
+  let result
+  switch (unit) {
+    case 'kg':
+      result = item.weight.value
+      break;
+    case 'g':
+      result = item.weight.value / 1000
+      break;
+    case 'mg':
+      result = item.weight.value / 1000000
+    default:
+      break;
+  }
+  return result
+
+}
+const calcDimension = (item, dimensionType) => {
+  const unit = item.dimensions[dimensionType].unit
+  let result
+  switch (unit) {
+    case 'm':
+
+      result = item.dimensions[dimensionType].value * 100
+
+      break;
+
+    case 'mm':
+      result = item.dimensions[dimensionType].value / 10
+      break;
+    case 'cm':
+      result = item.dimensions[dimensionType].value
+    default:
+      break;
+  }
+  return result
+}
+
 exports.post = ({ appSdk }, req, res) => {
   /**
    * Treat `params` and (optionally) `application` from request body to properly mount the `response`.
@@ -33,7 +73,7 @@ exports.post = ({ appSdk }, req, res) => {
   }
 
   const originZip = params.from ? params.from.zip.replace(/\D/g, '')
-  : appData.zip ? appData.zip.replace(/\D/g, '') : ''
+    : appData.zip ? appData.zip.replace(/\D/g, '') : ''
 
   if (!originZip) {
     // must have configured origin zip code to continue
@@ -43,32 +83,40 @@ exports.post = ({ appSdk }, req, res) => {
     })
   }
 
+  if (!params.items) {
+    return res.status(400).send({
+      error: 'CALCULATE_EMPTY_CART',
+      message: 'Cannot calculate shipping without cart items'
+    })
+  }
+
+  const items = []
+
+  for (const item of params.items) {
+    items.push(
+      {
+        declaredValue: item.price,
+        weight: calcWeight(item),
+        height: calcDimension(item, 'height'),
+        width: calcDimension(item, 'width'),
+        length: calcDimension(item, 'length'),
+        quantity: item.quantity
+      }
+    )
+
+  }
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
 
-
   const resource = `/v3/postalcodes/${params.to.zip}/rates`
-
-  const payload = {
-    items: [
-      {
-        declaredValue: 400.00,
-        weight: 0.138,
-        height: 0.7,
-        width: 7,
-        length: 14,
-        quantity: 2
-      }
-    ]
-  }
-
-  // Precisamos saber algumas adicionais como o 'from'
 
   return axios(
     {
       url: mandaeUrl + resource,
       method: 'POST',
-      data: payload,
+      data: {
+        items
+      },
       headers: {
         Authorization: mandaeToken
       }
