@@ -32,6 +32,17 @@ exports.post = ({ appSdk }, req, res) => {
     return
   }
 
+  const originZip = params.from ? params.from.zip.replace(/\D/g, '')
+  : appData.zip ? appData.zip.replace(/\D/g, '') : ''
+
+  if (!originZip) {
+    // must have configured origin zip code to continue
+    return res.status(409).send({
+      error: 'CALCULATE_ERR',
+      message: 'Zip code is unset on app hidden data (merchant must configure the app)'
+    })
+  }
+
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
 
