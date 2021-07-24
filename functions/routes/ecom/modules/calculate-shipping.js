@@ -61,19 +61,19 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
   let value = shipping.price
 
   if (Array.isArray(shippingRules)) {
-    for (let i=0; i < shippingRules.length; i++) {
+    for (let i = 0; i < shippingRules.length; i++) {
       const rule = shippingRules[i]
       console.log('[applyShippingDiscount]', shipping, rule)
       if (
-        rule 
-        && checkZipCode(destinationZip, rule) 
+        rule
+        && checkZipCode(destinationZip, rule)
         && (rule.service === 'Todos' || rule.service === shipping.name)
         && totalItems >= rule.min_amount
       ) {
         if (rule.free_shipping) {
           value = 0
           break
-        } else if (rule.discount){
+        } else if (rule.discount) {
           let discountValue = rule.discount.value
           if (rule.discount.percentage) {
             discountValue *= (value / 100)
@@ -86,7 +86,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
           }
           break
         }
-      }      
+      }
     }
   }
   return value
@@ -125,10 +125,10 @@ exports.post = ({ appSdk }, req, res) => {
     : appData.zip ? appData.zip.replace(/\D/g, '') : ''
 
   // search for configured free shipping rule  
-  if (Array.isArray(appData.shipping_rules)) {    
+  if (Array.isArray(appData.shipping_rules)) {
     for (let i = 0; i < appData.shipping_rules.length; i++) {
-      const rule = appData.shipping_rules[i]      
-      if (rule.free_shipping && checkZipCode(destinationZip, rule)) {        
+      const rule = appData.shipping_rules[i]
+      if (rule.free_shipping && checkZipCode(destinationZip, rule)) {
         if (!rule.min_amount) {
           response.free_shipping_from_value = 0
           break
