@@ -129,6 +129,53 @@
         }
       },
       "hide": false
+    },
+    "disable_services": {
+      "schema": {
+        "title": "Desabilitar serviços",
+        "description": "Desabilitar serviços de envio por cep",
+        "type": "array",
+        "maxItems": 300,
+        "items": {
+          "title": "Regra de envio",
+          "type": "object",
+          "minProperties": 1,
+          "properties": {
+            "service": {
+              "type": "string",
+              "enum": [
+                "Econômico",
+                "Rápido",
+                "Todos"
+              ],
+              "default": "Todos",
+              "title": "Tipo do serviço"
+            },
+            "zip_range": {
+              "title": "Faixa de CEP",
+              "type": "object",
+              "required": [
+                "min",
+                "max"
+              ],
+              "properties": {
+                "min": {
+                  "type": "integer",
+                  "minimum": 10000,
+                  "maximum": 999999999,
+                  "title": "CEP inicial"
+                },
+                "max": {
+                  "type": "integer",
+                  "minimum": 10000,
+                  "maximum": 999999999,
+                  "title": "CEP final"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "auth_callback_uri": "https://us-central1-ecom-mandae.cloudfunctions.net/app/ecom/auth-callback",
