@@ -22,6 +22,7 @@ const calcWeight = (item) => {
   return result
 
 }
+
 const calcDimension = (item, dimensionType) => {
   if (!item || !item.dimensions || !item.dimensions[dimensionType]) {
     return 0
@@ -45,6 +46,46 @@ const calcDimension = (item, dimensionType) => {
       break;
   }
   return result
+}
+
+const checkZipCode = (destinationZip, rule) => {
+  // validate rule zip range
+  console.log('[checkZipCode] ', destinationZip, rule.zip_range)
+  if (destinationZip && rule.zip_range) {
+    const { min, max } = rule.zip_range
+    return Boolean((!min || destinationZip >= min) && (!max || destinationZip <= max))
+  }
+  return true
+}
+
+const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shipping) => {
+  console.log('[applyShippingDiscount]', shippingRules, shipping)
+  let value = shipping.price
+
+  if (Array.isArray(shippingRules)) {
+    for (let i=0; i < shippingRules.length; i++) {
+      const rule = shippingRules[i]
+      if (rule && checkZipCode(destinationZip, rule) && totalItems >= rule.min_amount) {
+        if (rule.free_shipping) {
+          value = 0
+          break
+        } else if (rule.discount){
+          let discountValue = rule.discount.value
+          if (rule.discount.percentage) {
+            discountValue *= (value / 100)
+          }
+          if (discountValue) {
+            value -= discountValue
+            if (value < 0) {
+              value = 0
+            }
+          }
+          break
+        }
+      }      
+    }
+  }
+  return value
 }
 
 exports.post = ({ appSdk }, req, res) => {
@@ -79,21 +120,11 @@ exports.post = ({ appSdk }, req, res) => {
   const originZip = params.from ? params.from.zip.replace(/\D/g, '')
     : appData.zip ? appData.zip.replace(/\D/g, '') : ''
 
-  const checkZipCode = rule => {
-    // validate rule zip range
-    console.log('[checkZipCode] ', destinationZip, rule.zip_range)
-    if (destinationZip && rule.zip_range) {
-      const { min, max } = rule.zip_range
-      return Boolean((!min || destinationZip >= min) && (!max || destinationZip <= max))
-    }
-    return true
-  }
-
   // search for configured free shipping rule  
   if (Array.isArray(appData.shipping_rules)) {    
     for (let i = 0; i < appData.shipping_rules.length; i++) {
       const rule = appData.shipping_rules[i]      
-      if (rule.free_shipping && checkZipCode(rule)) {        
+      if (rule.free_shipping && checkZipCode(destinationZip, rule)) {        
         if (!rule.min_amount) {
           response.free_shipping_from_value = 0
           break
@@ -127,8 +158,10 @@ exports.post = ({ appSdk }, req, res) => {
   }
 
   const items = []
+  let totalItems = 0
 
   for (const item of params.items) {
+    totalItems += item.price
     items.push(
       {
         declaredValue: item.price,
@@ -160,14 +193,16 @@ exports.post = ({ appSdk }, req, res) => {
   ).then(({ data, status }) => {
     if (status === 200) {
       for (shipping of data.data.shippingServices) {
+        const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
+        const discount = shipping.price - totalPrice
         response.shipping_services.push({
           label: shipping.name,
           carrier: shipping.name,
           service_name: 'Mandae',
           shipping_line: {
             price: shipping.price,
-            total_price: shipping.price,
-            discount: 0,
+            total_price: totalPrice,
+            discount: discount,
             delivery_time: {
               days: shipping.days,
               working_days: true
