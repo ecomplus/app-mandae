@@ -2,6 +2,9 @@ const axios = require('axios')
 
 
 const calcWeight = (item) => {
+  if (!item || !item.weight) {
+    return 0
+  }
   const unit = item.weight.unit
   let result
   switch (unit) {
@@ -20,6 +23,10 @@ const calcWeight = (item) => {
 
 }
 const calcDimension = (item, dimensionType) => {
+  if (!item || item.dimensions || !item.dimensions[dimensionType]) {
+    return 0
+  }
+  
   const unit = item.dimensions[dimensionType].unit
   let result
   switch (unit) {
