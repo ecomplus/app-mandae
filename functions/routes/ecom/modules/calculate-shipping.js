@@ -50,7 +50,6 @@ const calcDimension = (item, dimensionType) => {
 
 const checkZipCode = (destinationZip, rule) => {
   // validate rule zip range
-  console.log('[checkZipCode] ', destinationZip, rule.zip_range)
   if (destinationZip && rule.zip_range) {
     const { min, max } = rule.zip_range
     return Boolean((!min || destinationZip >= min) && (!max || destinationZip <= max))
@@ -59,13 +58,18 @@ const checkZipCode = (destinationZip, rule) => {
 }
 
 const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shipping) => {
-  console.log('[applyShippingDiscount]', shippingRules, shipping)
   let value = shipping.price
 
   if (Array.isArray(shippingRules)) {
     for (let i=0; i < shippingRules.length; i++) {
       const rule = shippingRules[i]
-      if (rule && checkZipCode(destinationZip, rule) && totalItems >= rule.min_amount) {
+      console.log('[applyShippingDiscount]', shipping, rule)
+      if (
+        rule 
+        && checkZipCode(destinationZip, rule) 
+        && (rule.service === 'Todos' || rule.service === shipping.name)
+        && totalItems >= rule.min_amount
+      ) {
         if (rule.free_shipping) {
           value = 0
           break
@@ -193,6 +197,7 @@ exports.post = ({ appSdk }, req, res) => {
   ).then(({ data, status }) => {
     if (status === 200) {
       for (shipping of data.data.shippingServices) {
+        console.log("[shipping]", shipping)
         const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
         const discount = shipping.price - totalPrice
         response.shipping_services.push({
