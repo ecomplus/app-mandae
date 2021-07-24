@@ -22,7 +22,7 @@ const app = {
      * Triggered to calculate shipping options, must return values and deadlines.
      * Start editing `routes/ecom/modules/calculate-shipping.js`
      */
-    calculate_shipping:   { enabled: true },
+    calculate_shipping: { enabled: true },
 
     /**
      * Triggered to validate and apply discount value, must return discount and conditions.
@@ -136,7 +136,7 @@ const app = {
      * Ref.: https://developers.e-com.plus/docs/api/#/store/
      */
   },
-  
+
   admin_settings: {
     /**
      * JSON schema based fields to be configured by merchant and saved to app `data` / `hidden_data`, such as:     
@@ -158,7 +158,77 @@ const app = {
         description: 'Seus tokens da API podem ser acessados nas Configurações da sua conta → API dentro do aplicativo web da mandaê.'
       },
       hide: true
-    }
+    },
+    shipping_rules: {
+      schema: {
+        title: 'Regras de envio',
+        description: 'Aplicar descontos/adicionais condicionados ou desabilitar regiões',
+        type: 'array',
+        maxItems: 300,
+        items: {
+          title: 'Regra de envio',
+          type: 'object',
+          minProperties: 1,
+          properties: {
+            zip_range: {
+              title: 'Faixa de CEP',
+              type: 'object',
+              required: [
+                'min',
+                'max'
+              ],
+              properties: {
+                min: {
+                  type: 'integer',
+                  minimum: 10000,
+                  maximum: 999999999,
+                  title: 'CEP inicial'
+                },
+                max: {
+                  type: 'integer',
+                  minimum: 10000,
+                  maximum: 999999999,
+                  title: 'CEP final'
+                }
+              }
+            },
+            min_amount: {
+              type: 'number',
+              minimum: 1,
+              maximum: 999999999,
+              title: 'Valor mínimo da compra'
+            },
+            free_shipping: {
+              type: 'boolean',
+              default: false,
+              title: 'Frete grátis'
+            },
+            discount: {
+              title: 'Desconto',
+              type: 'object',
+              required: [
+                'value'
+              ],
+              properties: {
+                percentage: {
+                  type: 'boolean',
+                  default: false,
+                  title: 'Desconto percentual'
+                },
+                value: {
+                  type: 'number',
+                  minimum: -99999999,
+                  maximum: 99999999,
+                  title: 'Valor do desconto',
+                  description: 'Valor percentual/fixo do desconto ou acréscimo (negativo)'
+                }
+              }
+            }
+          }
+        }
+      },
+      hide: false
+    },
   }
 }
 
