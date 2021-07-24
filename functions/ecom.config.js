@@ -170,6 +170,16 @@ const app = {
           type: 'object',
           minProperties: 1,
           properties: {
+            service: {
+              type: 'string',
+              enum: [
+                'Econômico',
+                'Rápido',
+                'Todos'
+              ],
+              default: 'Todos',
+              title: 'Tipo do serviço'
+            },
             zip_range: {
               title: 'Faixa de CEP',
               type: 'object',
