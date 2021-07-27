@@ -2,8 +2,8 @@ const axios = require('axios')
 
 
 const calcWeight = (item) => {
-  if (!item || !item.weight) {
-    return 0
+  if (!item || !item.weight || !item.weight.value) {
+    return 0.000000001 // min weight needed by mandae
   }
   const unit = item.weight.unit
   let result
