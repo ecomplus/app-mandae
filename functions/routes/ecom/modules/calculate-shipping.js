@@ -62,8 +62,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
 
   if (Array.isArray(shippingRules)) {
     for (let i = 0; i < shippingRules.length; i++) {
-      const rule = shippingRules[i]
-      console.log('[applyShippingDiscount]', shipping, rule)
+      const rule = shippingRules[i]      
       if (
         rule
         && checkZipCode(destinationZip, rule)
@@ -92,8 +91,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
   return value
 }
 
-const isDisabledService = (destinationZip, disableServices, shipping) => {
-  console.log(disableServices, shipping)
+const isDisabledService = (destinationZip, disableServices, shipping) => {  
   if (Array.isArray(disableServices)) {
     for (let i = 0; i < disableServices.length; i++) {
       const rule = disableServices[i]
@@ -211,7 +209,6 @@ exports.post = ({ appSdk }, req, res) => {
   ).then(({ data, status }) => {
     if (status === 200) {
       for (shipping of data.data.shippingServices) {
-        console.log("[shipping]", shipping)
         if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
           const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
           const discount = shipping.price - totalPrice
