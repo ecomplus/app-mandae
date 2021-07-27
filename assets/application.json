@@ -175,7 +175,8 @@
             }
           }
         }
-      }
+      },
+      "hide": false
     }
   },
   "auth_callback_uri": "https://us-central1-ecom-mandae.cloudfunctions.net/app/ecom/auth-callback",
