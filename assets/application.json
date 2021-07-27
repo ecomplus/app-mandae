@@ -64,11 +64,12 @@
             "service": {
               "type": "string",
               "enum": [
+                "",
                 "Econômico",
                 "Rápido",
                 "Todos"
               ],
-              "default": "Todos",
+              "default": "",
               "title": "Tipo do serviço"
             },
             "zip_range": {
@@ -144,11 +145,12 @@
             "service": {
               "type": "string",
               "enum": [
+                "",
                 "Econômico",
                 "Rápido",
                 "Todos"
               ],
-              "default": "Todos",
+              "default": "",
               "title": "Tipo do serviço"
             },
             "zip_range": {
