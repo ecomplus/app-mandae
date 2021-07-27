@@ -92,6 +92,20 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
   return value
 }
 
+const isDisabledService = (destinationZip, disableServices, shipping) => {
+  console.log(disableServices, shipping)
+  if (Array.isArray(disableServices)) {
+    for (let i = 0; i < disableServices.length; i++) {
+      const rule = disableServices[i]
+      if (rule && checkZipCode(destinationZip, rule) &&
+        (rule.service === 'Todos' || rule.service === shipping.name)) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 exports.post = ({ appSdk }, req, res) => {
   /**
    * Treat `params` and (optionally) `application` from request body to properly mount the `response`.
@@ -198,29 +212,31 @@ exports.post = ({ appSdk }, req, res) => {
     if (status === 200) {
       for (shipping of data.data.shippingServices) {
         console.log("[shipping]", shipping)
-        const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
-        const discount = shipping.price - totalPrice
-        response.shipping_services.push({
-          label: shipping.name,
-          carrier: shipping.name,
-          service_name: 'Mandae',
-          shipping_line: {
-            price: shipping.price,
-            total_price: totalPrice,
-            discount: discount,
-            delivery_time: {
-              days: shipping.days,
-              working_days: true
+        if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
+          const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
+          const discount = shipping.price - totalPrice
+          response.shipping_services.push({
+            label: shipping.name,
+            carrier: shipping.name,
+            service_name: 'Mandae',
+            shipping_line: {
+              price: shipping.price,
+              total_price: totalPrice,
+              discount: discount,
+              delivery_time: {
+                days: shipping.days,
+                working_days: true
+              },
+              from: {
+                zip: originZip
+              },
+              to: {
+                zip: data.data ? data.data.postalCode : params.to.zip
+              }
             },
-            from: {
-              zip: originZip
-            },
-            to: {
-              zip: data.data ? data.data.postalCode : params.to.zip
-            }
-          },
-          flags: ['mandae-ws']
-        })
+            flags: ['mandae-ws']
+          })
+        }
       }
       res.send(response)
       return
@@ -241,39 +257,4 @@ exports.post = ({ appSdk }, req, res) => {
       message: error.message
     })
   })
-
-  /* DO THE STUFF HERE TO FILL RESPONSE OBJECT WITH SHIPPING SERVICES */
-
-  /**
-   * Sample snippets:
-
-  if (params.items) {
-    let totalWeight = 0
-    params.items.forEach(item => {
-      // treat items to ship
-      totalWeight += item.quantity * item.weight.value
-    })
-  }
-
-  // add new shipping service option
-  response.shipping_services.push({
-    label: appData.label || 'My shipping method',
-    carrier: 'My carrier',
-    shipping_line: {
-      from: appData.from,
-      to: params.to,
-      package: {
-        weight: {
-          value: totalWeight
-        }
-      },
-      price: 10,
-      delivery_time: {
-        days: 3,
-        working_days: true
-      }
-    }
-  })
-
-  */
 }

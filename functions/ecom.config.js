@@ -284,7 +284,8 @@ const app = {
             }
           }
         }
-      }
+      },
+      hide: false
     }
   }
 }
