@@ -173,11 +173,12 @@ const app = {
             service: {
               type: 'string',
               enum: [
+                '',
                 'Econômico',
                 'Rápido',
                 'Todos'
               ],
-              default: 'Todos',
+              default: '',
               title: 'Tipo do serviço'
             },
             zip_range: {
@@ -253,11 +254,12 @@ const app = {
             service: {
               type: 'string',
               enum: [
+                '',
                 'Econômico',
                 'Rápido',
                 'Todos'
               ],
-              default: 'Todos',
+              default: '',
               title: 'Tipo do serviço'
             },
             zip_range: {
