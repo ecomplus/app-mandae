@@ -139,7 +139,7 @@ const app = {
 
   admin_settings: {
     /**
-     * JSON schema based fields to be configured by merchant and saved to app `data` / `hidden_data`, such as:     
+     * JSON schema based fields to be configured by merchant and saved to app `data` / `hidden_data`, such as:
      */
     zip: {
       schema: {
