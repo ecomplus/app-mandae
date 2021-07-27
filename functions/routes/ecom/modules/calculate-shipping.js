@@ -23,20 +23,20 @@ const calcWeight = (item) => {
 
 }
 
-const calcDimension = (item, dimensionType) => {
-  if (!item || !item.dimensions || !item.dimensions[dimensionType]) {
-    return 0
+const calcDimension = (item, dimensionType) => {  
+  if (!item || !item.dimensions || !item.dimensions[dimensionType] || !item.dimensions[dimensionType].value) {
+    return 10
   }
 
   const unit = item.dimensions[dimensionType].unit
   let result
   switch (unit) {
     case 'm':
-
       result = item.dimensions[dimensionType].value * 100
-
       break;
-
+    case 'dm':
+      result = item.dimensions[dimensionType].value * 10
+      break;
     case 'mm':
       result = item.dimensions[dimensionType].value / 10
       break;
