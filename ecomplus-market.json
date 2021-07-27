@@ -1,7 +1,7 @@
 {
   "app": {
-    "title": "",
-    "short_description": "",
-    "category": "tools"
+    "title": "Mandaê",
+    "short_description": "Cálculo de frete e prazo de envio via Mandaê",
+    "category": "shipping"
   }
 }
