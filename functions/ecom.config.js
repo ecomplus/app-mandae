@@ -221,10 +221,16 @@ const app = {
                 'value'
               ],
               properties: {
-                percentage: {
-                  type: 'boolean',
-                  default: false,
-                  title: 'Desconto percentual'
+                type: {
+                  type: 'string',
+                  enum: [
+                    'Percentual',
+                    'Percentual no subtotal',
+                    'Fixo'
+                  ],
+                  default: 'Fixo',
+                  title: 'Tipo de desconto',
+                  description: 'Desconto/acréscimo com valor percentual ou fixo'
                 },
                 value: {
                   type: 'number',

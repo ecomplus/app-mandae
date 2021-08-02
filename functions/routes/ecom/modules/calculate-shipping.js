@@ -52,7 +52,6 @@ const checkZipCode = (destinationZip, rule) => {
 
 const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shipping) => {
   let value = shipping.price
-
   if (Array.isArray(shippingRules)) {
     for (let i = 0; i < shippingRules.length; i++) {
       const rule = shippingRules[i]
@@ -67,8 +66,10 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
           break
         } else if (rule.discount) {
           let discountValue = rule.discount.value
-          if (rule.discount.percentage) {
+          if (rule.discount.percentage || rule.discount.type === 'Percentual') {
             discountValue *= (value / 100)
+          } else if (rule.discount.type === 'Percentual no subtotal') {
+            discountValue *= (totalItems / 100)
           }
           if (discountValue) {
             value -= discountValue
