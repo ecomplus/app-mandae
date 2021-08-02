@@ -171,17 +171,19 @@ exports.post = ({ appSdk }, req, res) => {
   let totalItems = 0
 
   for (const item of params.items) {
-    totalItems += item.price
-    items.push(
-      {
-        declaredValue: item.price,
-        weight: calcWeight(item),
-        height: calcDimension(item, 'height'),
-        width: calcDimension(item, 'width'),
-        length: calcDimension(item, 'length'),
-        quantity: item.quantity
-      }
-    )
+    if (item.quantity > 0) {
+      totalItems += (item.price * item.quantity)
+      items.push(
+        {
+          declaredValue: item.price,
+          weight: calcWeight(item),
+          height: calcDimension(item, 'height'),
+          width: calcDimension(item, 'width'),
+          length: calcDimension(item, 'length'),
+          quantity: item.quantity
+        }
+      )
+    }
   }
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
