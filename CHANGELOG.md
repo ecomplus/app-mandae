@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/ecomplus/application-starter/compare/v1.0.0...v1.1.0) (2021-08-02)
+
+
+### Features
+
+* **calculate-shipping:** handle discount with percentage from subtotal [[#1](https://github.com/ecomplus/application-starter/issues/1)] ([95061b3](https://github.com/ecomplus/application-starter/commit/95061b36effe670ee9ee7f9d166d4c96d15d3b43))
+
+
+### Bug Fixes
+
+* **calculate-shipping:** must set subtotal with sum of price * quantity ([609d5b7](https://github.com/ecomplus/application-starter/commit/609d5b7995ef648c27354429b51316ed34f9a3c1))
+
 ## 1.0.0 (2021-07-27)
 
 ## [1.0.0-starter.24](https://github.com/ecomplus/application-starter/compare/v1.0.0-starter.23...v1.0.0-starter.24) (2021-06-24)
