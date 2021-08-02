@@ -1,6 +1,5 @@
 const axios = require('axios')
 
-
 const calcWeight = (item) => {
   if (!item || !item.weight || !item.weight.value) {
     return 0.000000001 // min weight needed by mandae
@@ -10,40 +9,34 @@ const calcWeight = (item) => {
   switch (unit) {
     case 'kg':
       result = item.weight.value
-      break;
+      break
     case 'g':
       result = item.weight.value / 1000
-      break;
+      break
     case 'mg':
       result = item.weight.value / 1000000
-    default:
-      break;
   }
   return result
-
 }
 
-const calcDimension = (item, dimensionType) => {  
+const calcDimension = (item, dimensionType) => {
   if (!item || !item.dimensions || !item.dimensions[dimensionType] || !item.dimensions[dimensionType].value) {
     return 10
   }
-
   const unit = item.dimensions[dimensionType].unit
   let result
   switch (unit) {
     case 'm':
       result = item.dimensions[dimensionType].value * 100
-      break;
+      break
     case 'dm':
       result = item.dimensions[dimensionType].value * 10
-      break;
+      break
     case 'mm':
       result = item.dimensions[dimensionType].value / 10
-      break;
+      break
     case 'cm':
       result = item.dimensions[dimensionType].value
-    default:
-      break;
   }
   return result
 }
@@ -62,12 +55,12 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
 
   if (Array.isArray(shippingRules)) {
     for (let i = 0; i < shippingRules.length; i++) {
-      const rule = shippingRules[i]      
+      const rule = shippingRules[i]
       if (
-        rule
-        && checkZipCode(destinationZip, rule)
-        && (rule.service === 'Todos' || rule.service === shipping.name)
-        && totalItems >= rule.min_amount
+        rule &&
+        checkZipCode(destinationZip, rule) &&
+        (rule.service === 'Todos' || rule.service === shipping.name) &&
+        totalItems >= rule.min_amount
       ) {
         if (rule.free_shipping) {
           value = 0
@@ -91,7 +84,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
   return value
 }
 
-const isDisabledService = (destinationZip, disableServices, shipping) => {  
+const isDisabledService = (destinationZip, disableServices, shipping) => {
   if (Array.isArray(disableServices)) {
     for (let i = 0; i < disableServices.length; i++) {
       const rule = disableServices[i]
@@ -118,7 +111,7 @@ exports.post = ({ appSdk }, req, res) => {
    */
 
   const { params, application } = req.body
-  const { storeId } = req
+  // const { storeId } = req
   // setup basic required response object
   const response = {
     shipping_services: []
@@ -133,10 +126,11 @@ exports.post = ({ appSdk }, req, res) => {
 
   const destinationZip = params.to ? params.to.zip.replace(/\D/g, '') : ''
 
-  const originZip = params.from ? params.from.zip.replace(/\D/g, '')
+  const originZip = params.from
+    ? params.from.zip.replace(/\D/g, '')
     : appData.zip ? appData.zip.replace(/\D/g, '') : ''
 
-  // search for configured free shipping rule  
+  // search for configured free shipping rule
   if (Array.isArray(appData.shipping_rules)) {
     for (let i = 0; i < appData.shipping_rules.length; i++) {
       const rule = appData.shipping_rules[i]
@@ -188,7 +182,6 @@ exports.post = ({ appSdk }, req, res) => {
         quantity: item.quantity
       }
     )
-
   }
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
@@ -208,7 +201,7 @@ exports.post = ({ appSdk }, req, res) => {
     }
   ).then(({ data, status }) => {
     if (status === 200) {
-      for (shipping of data.data.shippingServices) {
+      for (const shipping of data.data.shippingServices) {
         if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
           const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
           const discount = shipping.price - totalPrice
@@ -236,7 +229,6 @@ exports.post = ({ appSdk }, req, res) => {
         }
       }
       res.send(response)
-      return
     } else {
       const err = new Error('Invalid Mandae calculate response')
       err.response = { data, status }
