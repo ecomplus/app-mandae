@@ -148,7 +148,8 @@ const app = {
         pattern: '^[0-9]{5}-?[0-9]{3}$',
         title: 'CEP de origem',
         description: 'Código postal do remetente para cálculo do frete cadastrado no Mandaê'
-      }
+      },
+      hide: true
     },
     mandae_token: {
       schema: {
@@ -158,6 +159,16 @@ const app = {
         description: 'Seus tokens da API podem ser acessados nas Configurações da sua conta → API dentro do aplicativo web da mandaê.'
       },
       hide: true
+    },
+    additional_price: {
+      schema: {
+        type: 'number',
+        minimum: -999999,
+        maximum: 999999,
+        title: 'Custo adicional fixo',
+        description: 'Valor a adicionar (negativo para descontar) no frete calculado via Mandaê'
+      },
+      hide: false
     },
     shipping_rules: {
       schema: {

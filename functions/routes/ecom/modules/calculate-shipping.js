@@ -206,7 +206,13 @@ exports.post = ({ appSdk }, req, res) => {
     if (status === 200) {
       for (const shipping of data.data.shippingServices) {
         if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
-          const totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
+          let totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
+          if (appData.additional_price) {
+            totalPrice += appData.additional_price
+          }
+          if (totalPrice < 0) {
+            totalPrice = 0
+          }
           const discount = shipping.price - totalPrice
           response.shipping_services.push({
             label: shipping.name,
@@ -215,7 +221,7 @@ exports.post = ({ appSdk }, req, res) => {
             shipping_line: {
               price: shipping.price,
               total_price: totalPrice,
-              discount: discount,
+              discount,
               delivery_time: {
                 days: shipping.days,
                 working_days: true
