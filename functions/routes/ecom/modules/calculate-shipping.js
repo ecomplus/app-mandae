@@ -229,7 +229,10 @@ exports.post = ({ appSdk }, req, res) => {
               from: {
                 zip: originZip
               },
-              to: params.to
+              to: {
+                ...params.to,
+                zip: (data.data && data.data.postalCode) || params.to.zip
+              }
             },
             flags: ['mandae-ws']
           })
