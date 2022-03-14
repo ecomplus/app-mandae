@@ -226,6 +226,10 @@ exports.post = ({ appSdk }, req, res) => {
                 days: shipping.days,
                 working_days: true
               },
+              posting_deadline: {
+                days: 3,
+                ...appData.posting_deadline
+              },
               from: {
                 zip: originZip
               },
