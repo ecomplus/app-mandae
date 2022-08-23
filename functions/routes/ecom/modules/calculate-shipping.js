@@ -218,6 +218,7 @@ exports.post = ({ appSdk }, req, res) => {
             label: shipping.name,
             carrier: shipping.name,
             service_name: 'Mandae',
+            service_code: `Mandae_${shipping.name}`,
             shipping_line: {
               price: shipping.price,
               total_price: totalPrice,
