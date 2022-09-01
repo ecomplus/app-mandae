@@ -21,7 +21,7 @@ const calcWeight = (item) => {
 
 const calcDimension = (item, dimensionType) => {
   if (!item || !item.dimensions || !item.dimensions[dimensionType] || !item.dimensions[dimensionType].value) {
-    return 10
+    return 1
   }
   const unit = item.dimensions[dimensionType].unit
   let result
