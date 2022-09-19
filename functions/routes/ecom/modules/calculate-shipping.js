@@ -207,7 +207,7 @@ exports.post = ({ appSdk }, req, res) => {
       for (const shipping of data.data.shippingServices) {
         if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
           let totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
-          if (appData.additional_price) {
+          if (appData.additional_price && totalPrice) {
             totalPrice += appData.additional_price
           }
           if (totalPrice < 0) {
