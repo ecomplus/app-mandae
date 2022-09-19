@@ -50,7 +50,7 @@ const checkZipCode = (destinationZip, rule) => {
   return true
 }
 
-const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shipping) => {
+const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shipping, appData) => {
   let value = shipping.price
   if (Array.isArray(shippingRules)) {
     for (let i = 0; i < shippingRules.length; i++) {
@@ -73,6 +73,12 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
           }
           if (discountValue) {
             value -= discountValue
+            if (value < 0) {
+              value = 0
+            }
+          }
+          if (appData.additional_price && value) {
+            value += appData.additional_price
             if (value < 0) {
               value = 0
             }
@@ -206,13 +212,7 @@ exports.post = ({ appSdk }, req, res) => {
     if (status === 200) {
       for (const shipping of data.data.shippingServices) {
         if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
-          let totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
-          if (appData.additional_price && (totalPrice > 0)) {
-            totalPrice += appData.additional_price
-          }
-          if (totalPrice < 0) {
-            totalPrice = 0
-          }
+          let totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping, appData)
           const discount = shipping.price - totalPrice
           response.shipping_services.push({
             label: shipping.name,
