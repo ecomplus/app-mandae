@@ -209,9 +209,9 @@ exports.post = ({ appSdk }, req, res) => {
           let totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
           if (appData.additional_price && totalPrice) {
             totalPrice += appData.additional_price
-            if (totalPrice < 0) {
-              totalPrice = 0
-            }
+          }
+          if (totalPrice < 0) {
+            totalPrice = 0
           }
           const discount = shipping.price - totalPrice
           response.shipping_services.push({
