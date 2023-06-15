@@ -1,4 +1,5 @@
 const axios = require('axios')
+const ecomUtils = require('@ecomplus/utils')
 
 const calcWeight = (item) => {
   if (!item || !item.weight || !item.weight.value) {
@@ -173,10 +174,10 @@ exports.post = ({ appSdk }, req, res) => {
 
   for (const item of params.items) {
     if (item.quantity > 0) {
-      totalItems += (item.price * item.quantity)
+      totalItems += (ecomUtils.price(item) * item.quantity)
       items.push(
         {
-          declaredValue: item.price,
+          declaredValue: ecomUtils.price(item),
           weight: calcWeight(item),
           height: calcDimension(item, 'height'),
           width: calcDimension(item, 'width'),
