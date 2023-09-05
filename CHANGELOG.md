@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/ecomplus/application-starter/compare/v1.3.0...v1.3.1) (2023-09-05)
+
+
+### Bug Fixes
+
+* **calculate-shipping:** do not insert additional value on free shipping rule ([#45](https://github.com/ecomplus/application-starter/issues/45)) ([3f9bd51](https://github.com/ecomplus/application-starter/commit/3f9bd513dc5ed63295c3943f8351e3b7514fed7a))
+* **calculate-shipping:** return shipping services with `service_code` ([#39](https://github.com/ecomplus/application-starter/issues/39)) [[#40](https://github.com/ecomplus/application-starter/issues/40)] ([3142eea](https://github.com/ecomplus/application-starter/commit/3142eeab69e2fd23a2757d117cfb5c3330d5554b))
+* **calculate-shipping:** use ecomutils to get correct price ([b282803](https://github.com/ecomplus/application-starter/commit/b282803a83e9473fa98bb6440a7a5aa92476f597))
+* **deps:** update all non-major ([a7a4275](https://github.com/ecomplus/application-starter/commit/a7a427535f8a185fb69bd9bb32d3726d183dd437))
+* **deps:** update all non-major ([9b7b5f1](https://github.com/ecomplus/application-starter/commit/9b7b5f1b9aeaf342f060758175be9c8df83d6e9c))
+* **deps:** update all non-major ([115a50d](https://github.com/ecomplus/application-starter/commit/115a50d2ae79fa1faabac203a46c7de1e78c63b9))
+* **deps:** update all non-major ([b1b78b3](https://github.com/ecomplus/application-starter/commit/b1b78b33d720fddfcf19151b38cb6a290264c16a))
+* **deps:** update all non-major ([32cfe02](https://github.com/ecomplus/application-starter/commit/32cfe02b3a953ac7a79a3791fe8c4cad66ae1e71))
+* **deps:** update dependency dotenv to ^16.1.3 ([3f2a3ff](https://github.com/ecomplus/application-starter/commit/3f2a3ff9d6af347bf85f0d792b92a77ab9c38a93))
+
 ## [1.3.0](https://github.com/ecomplus/application-starter/compare/v1.2.0...v1.3.0) (2022-03-14)
 
 
