@@ -102,6 +102,12 @@
           "type": "object",
           "minProperties": 1,
           "properties": {
+            "label": {
+              "type": "string",
+              "maxLength": 255,
+              "title": "Rótulo",
+              "description": "Título (opcional) da regra de envio apenas para controle interno"
+            },
             "service": {
               "type": "string",
               "enum": [
@@ -229,5 +235,5 @@
     }
   },
   "auth_callback_uri": "https://us-central1-ecom-mandae.cloudfunctions.net/app/ecom/auth-callback",
-  "version": "1.3.0"
+  "version": "1.3.1"
 }
