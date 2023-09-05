@@ -209,6 +209,12 @@ const app = {
           type: 'object',
           minProperties: 1,
           properties: {
+            label: {
+              type: 'string',
+              maxLength: 255,
+              title: 'Rótulo',
+              description: 'Título (opcional) da regra de envio apenas para controle interno'
+            },
             service: {
               type: 'string',
               enum: [
