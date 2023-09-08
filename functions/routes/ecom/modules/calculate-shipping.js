@@ -215,7 +215,7 @@ exports.post = ({ appSdk }, req, res) => {
             totalPrice = 0
           }
           const discount = shipping.price - totalPrice
-          response.shipping_services.push({
+          const shippingLine = {
             label: shipping.name,
             carrier: shipping.name,
             service_name: 'Mandae',
@@ -241,7 +241,17 @@ exports.post = ({ appSdk }, req, res) => {
               }
             },
             flags: ['mandae-ws']
-          })
+          }
+          if (Array.isArray(appData.carriers)) {
+            const carrier = appData.carriers.find(({ service }) => {
+              return service === shipping.name || !service || service === 'Todos'
+            })
+            if (carrier) {
+              shippingLine.carrier = carrier.carrier
+              shippingLine.carrier_doc_number = carrier.carrier_doc_number
+            }
+          }
+          response.shipping_services.push(shippingLine)
         }
       }
       res.send(response)

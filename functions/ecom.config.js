@@ -339,6 +339,44 @@ const app = {
         }
       },
       hide: false
+    },
+    carriers: {
+      schema: {
+        title: 'Informações das transportadoras',
+        description: 'Dados adicionais das transportadoras por serviço',
+        type: 'array',
+        maxItems: 3,
+        items: {
+          title: 'Transportadora',
+          type: 'object',
+          minProperties: 1,
+          properties: {
+            service: {
+              type: 'string',
+              enum: [
+                '',
+                'Econômico',
+                'Rápido',
+                'Todos'
+              ],
+              default: '',
+              title: 'Tipo do serviço'
+            },
+            carrier: {
+              type: 'string',
+              maxLength: 200,
+              title: 'Nome da transportadora',
+            },
+            carrier_doc_number: {
+              type: 'string',
+              maxLength: 19,
+              pattern: '^[0-9]+$',
+              title: 'CNPJ da transportadora',
+            }
+          }
+        }
+      },
+      hide: true
     }
   }
 }
