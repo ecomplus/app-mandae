@@ -247,8 +247,12 @@ exports.post = ({ appSdk }, req, res) => {
               return service === shipping.name || !service || service === 'Todos'
             })
             if (carrier) {
-              shippingLine.carrier = carrier.carrier
-              shippingLine.carrier_doc_number = carrier.carrier_doc_number
+              if (carrier.carrier) {
+                shippingLine.carrier = carrier.carrier
+              }
+              if (carrier.carrier_doc_number) {
+                shippingLine.carrier_doc_number = carrier.carrier_doc_number.replace(/\D/g, '')
+              }
             }
           }
           response.shipping_services.push(shippingLine)
