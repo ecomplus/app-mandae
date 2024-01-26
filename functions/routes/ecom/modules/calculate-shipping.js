@@ -171,9 +171,36 @@ exports.post = ({ appSdk }, req, res) => {
 
   const items = []
   let totalItems = 0
+  let kgWeightBiggerBox = 0
+  const cmDimensions = {}
 
   for (const item of params.items) {
     if (item.quantity > 0) {
+      if (appData.use_bigger_box) {
+        kgWeightBiggerBox += calcWeight(item)
+        const { dimensions } = item
+        if (dimensions) {
+          for (const side in dimensions) {
+            const dimension = dimensions[side]
+            if (dimension && dimension.value) {
+              switch (dimension.unit) {
+                case 'm':
+                  cmDimensions[side] = dimension.value * 100
+                  break
+                case 'mm':
+                  cmDimensions[side] = dimension.value / 10
+                  break
+                default:
+                  cmDimensions[side] = dimension.value
+              }
+              if (!cmDimensionsBiggerBox[side] || cmDimensionsBiggerBox[side] < cmDimensions[side]) {
+                cmDimensionsBiggerBox[side] = cmDimensions[side]
+              }
+            }
+          }
+        }
+      }
+      
       totalItems += (ecomUtils.price(item) * item.quantity)
       items.push(
         {
@@ -186,6 +213,17 @@ exports.post = ({ appSdk }, req, res) => {
         }
       )
     }
+  }
+
+  if (appData.use_bigger_box) {
+    items = [{
+      declaredValue: totalItems,
+      weight: kgWeightBiggerBox,
+      height: cmDimensions.height || 1,
+      width: cmDimensions.width || 1,
+      length: cmDimensions.length || 1,
+      quantity: 1
+    }]
   }
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
