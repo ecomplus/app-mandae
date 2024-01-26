@@ -169,7 +169,7 @@ exports.post = ({ appSdk }, req, res) => {
     })
   }
 
-  const items = []
+  let items = []
   let totalItems = 0
   let kgWeightBiggerBox = 0
   const cmDimensionsBiggerBox = {}
