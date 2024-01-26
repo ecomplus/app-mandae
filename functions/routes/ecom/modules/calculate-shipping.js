@@ -172,11 +172,12 @@ exports.post = ({ appSdk }, req, res) => {
   const items = []
   let totalItems = 0
   let kgWeightBiggerBox = 0
-  const cmDimensions = {}
+  const cmDimensionsBiggerBox = {}
 
   for (const item of params.items) {
     if (item.quantity > 0) {
       if (appData.use_bigger_box) {
+        const cmDimensions = {}
         kgWeightBiggerBox += calcWeight(item)
         const { dimensions } = item
         if (dimensions) {
@@ -219,9 +220,9 @@ exports.post = ({ appSdk }, req, res) => {
     items = [{
       declaredValue: totalItems,
       weight: kgWeightBiggerBox,
-      height: cmDimensions.height || 1,
-      width: cmDimensions.width || 1,
-      length: cmDimensions.length || 1,
+      height: cmDimensionsBiggerBox.height || 1,
+      width: cmDimensionsBiggerBox.width || 1,
+      length: cmDimensionsBiggerBox.length || 1,
       quantity: 1
     }]
   }
