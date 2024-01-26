@@ -113,7 +113,7 @@ exports.post = ({ appSdk }, req, res) => {
    */
 
   const { params, application } = req.body
-  // const { storeId } = req
+  const { storeId } = req
   // setup basic required response object
   const response = {
     shipping_services: []
@@ -225,6 +225,11 @@ exports.post = ({ appSdk }, req, res) => {
       length: cmDimensionsBiggerBox.length || 1,
       quantity: 1
     }]
+  }
+  if (storeId == 51372) {
+    console.log('item', JSON.stringify(items))
+    console.log('bigger box kg', kgWeightBiggerBox)
+    console.log('bigger box dimension', JSON.stringify(cmDimensionsBiggerBox))
   }
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
