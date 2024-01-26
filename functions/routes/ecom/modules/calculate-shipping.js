@@ -178,7 +178,7 @@ exports.post = ({ appSdk }, req, res) => {
     if (item.quantity > 0) {
       if (appData.use_bigger_box) {
         const cmDimensions = {}
-        kgWeightBiggerBox += calcWeight(item)
+        kgWeightBiggerBox += (calcWeight(item) * item.quantity)
         const { dimensions } = item
         if (dimensions) {
           for (const side in dimensions) {
