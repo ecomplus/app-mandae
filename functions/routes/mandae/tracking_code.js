@@ -4,7 +4,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
   const { docNumber, trackingCode, email, invoiceKey, skus, recipient, declareValue } = body
   const storeId = parseInt(query.storeId, 10)
   console.log('>> Store: ', storeId, ' body: ', JSON.stringify(body), '<<')
-  if (storeId > 100 && code) {
+  if (storeId > 100) {
     return appSdk.getAuth(storeId)
       .then(async (auth) => {
         try {
