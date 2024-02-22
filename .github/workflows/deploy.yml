@@ -48,6 +48,7 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           SERVER_OPERATOR_TOKEN: ${{ secrets.SERVER_OPERATOR_TOKEN }}
+          MANDAE_WEBHOOK: ${{ secrets.MANDAE_WEBHOOK }}
         run: npm run deploy
 
   update-app-json:

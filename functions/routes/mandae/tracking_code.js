@@ -1,15 +1,42 @@
 exports.post = async ({ appSdk, admin }, req, res) => {
   console.log('>> POST Tracking')
   const { body, query } = req
-  const { docNumber, trackingCode, email, invoiceKey, skus, recipient, declareValue } = body
+  const { trackingCode, carrierCode, events } = body
   const storeId = parseInt(query.storeId, 10)
-  console.log('>> Store: ', storeId, ' body: ', JSON.stringify(body), '<<')
-  if (storeId > 100) {
+  if (storeId > 100 && trackingCode) {
+    console.log('>> Store tracking: ', storeId, ' body: ', JSON.stringify(body), '<<')
     return appSdk.getAuth(storeId)
       .then(async (auth) => {
         try {
             console.log('logado')
-            return res.status(200).send('ok')
+            const number = trackingCode.replace('TIA', '')
+            return appSdk
+            .apiRequest(storeId, `orders.json?number=${number}`)
+            .then(({ data }) => {
+              const order = data && data.result && data.result[0]
+              const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
+              const lastEvent = findMostRecentEvent(events)
+              let status 
+              if (lastEvent.id == 121) {
+                status = 'shipped'
+              } else if (lastEvent.id == 1) {
+                status = 'delivered'
+              }
+              if (status) {
+                return appSdk
+                .apiRequest(storeId, `orders/${order.id}.json`, 'PATCH', {
+                  "fulfillment_status": {
+                    "current": status,
+                    "flags": [
+                      status,
+                      "mandae"
+                    ]
+                  }
+                }, auth).then(response => {
+                  return res.status(200).send('ok')
+                })
+              }
+            })
         } catch (error) {
           console.error(error)
           const { response, config } = error
