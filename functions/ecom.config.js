@@ -399,7 +399,7 @@ const procedures = []
 
 /**
  * Uncomment and edit code above to configure `triggers` and receive respective `webhooks`:
-
+*/
 const { baseUri } = require('./__env')
 
 procedures.push({
@@ -409,40 +409,7 @@ procedures.push({
     // Receive notifications when new order is created:
     {
       resource: 'orders',
-      action: 'create',
-    },
-
-    // Receive notifications when order financial/fulfillment status changes:
-    {
-      resource: 'orders',
-      field: 'financial_status',
-    },
-    {
-      resource: 'orders',
-      field: 'fulfillment_status',
-    },
-
-    // Receive notifications when products/variations stock quantity changes:
-    {
-      resource: 'products',
-      field: 'quantity',
-    },
-    {
-      resource: 'products',
-      subresource: 'variations',
-      field: 'quantity'
-    },
-
-    // Receive notifications when cart is edited:
-    {
-      resource: 'carts',
-      action: 'change',
-    },
-
-    // Receive notifications when customer is deleted:
-    {
-      resource: 'customers',
-      action: 'delete',
+      field: 'invoices',
     },
 
     // Feel free to create custom combinations with any Store API resource, subresource, action and field.
