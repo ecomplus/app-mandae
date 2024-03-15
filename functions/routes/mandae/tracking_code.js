@@ -9,9 +9,9 @@ exports.post = async ({ appSdk, admin }, req, res) => {
       .then(async (auth) => {
         try {
             console.log('logado')
-            const number = trackingCode.replace('TIA', '')
+            const number = trackingCode.replace('TIA', '').replace('21', '')
             return appSdk
-            .apiRequest(storeId, `orders.json?number=${number}`)
+            .apiRequest(storeId, `orders.json?shipping_lines.app.carrier=MANDAE&shipping_lines.invoices.number=${number}`)
             .then(({ data }) => {
               const order = data && data.result && data.result[0]
               const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
