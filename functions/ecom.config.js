@@ -409,8 +409,8 @@ procedures.push({
     // Receive notifications when new order is created:
     {
       resource: 'orders',
-      field: 'invoices',
-    },
+      field: 'invoices'
+    }
 
     // Feel free to create custom combinations with any Store API resource, subresource, action and field.
   ],
@@ -426,7 +426,7 @@ procedures.push({
     }
   ]
 })
-
+/*
  * You may also edit `routes/ecom/webhook.js` to treat notifications properly.
  */
 
