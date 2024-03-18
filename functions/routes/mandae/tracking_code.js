@@ -11,7 +11,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
             console.log('logado')
             const number = trackingCode.replace('TIA', '').replace('21', '')
             return appSdk
-            .apiRequest(storeId, `orders.json?shipping_lines.app.carrier=MANDAE&shipping_lines.invoices.number=0000${number}`, )
+            .apiRequest(storeId, `orders.json?shipping_lines.app.carrier=MANDAE&shipping_lines.invoices.number=0000${number}`, 'GET', null, auth)
             .then(({ data }) => {
               console.log('Return from request', data)
               const order = data && data.result && data.result[0]
@@ -37,7 +37,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
                   return res.status(200).send('ok')
                 })
               }
-            })
+            }).catch(err => console.log('nao buscou pedidos', err))
         } catch (error) {
           console.error(error)
           const { response, config } = error
