@@ -11,16 +11,16 @@ exports.post = async ({ appSdk, admin }, req, res) => {
             console.log('logado')
             const number = trackingCode.replace('TIA', '').replace('21', '')
             return appSdk
-            .apiRequest(storeId, `orders.json?shipping_lines.app.carrier=MANDAE&shipping_lines.invoices.number=0000${number}`, 'GET', null, auth)
+            .apiRequest(storeId, `/orders.json?shipping_lines.app.carrier=MANDAE&shipping_lines.invoices.number=0000${number}`, 'GET', null, auth)
             .then(({ data }) => {
               console.log('Return from request', data)
               const order = data && data.result && data.result[0]
               const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
               const lastEvent = findMostRecentEvent(events)
               let status 
-              if (lastEvent.id == 121) {
+              if (lastEvent && lastEvent.id == 121) {
                 status = 'shipped'
-              } else if (lastEvent.id == 1) {
+              } else if (lastEvent && lastEvent.id == 1) {
                 status = 'delivered'
               }
               if (status) {
