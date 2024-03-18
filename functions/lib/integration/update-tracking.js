@@ -45,6 +45,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
       .then(async (appData) => {
         resolve()
         const token = appData.mandae_token
+        console.log('get in app')
         let orders
         const ordersEndpoint = '/orders.json?fields=_id,number,fulfillment_status,shipping_lines.invoices' +
             '&shipping_lines.app.carrier=MANDAE' +
@@ -53,6 +54,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
             `&created_at>=${new Date(Date.now() - 1000 * 60 * 60 * 10 * 60).toISOString()}`
         try {
             const { response } = await appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
+            console.log('response result', JSON.stringify(response.data))
             orders = response.data.result
             if (!orders.length) return
             for (let index = 0; index < orders.length; index++) {
