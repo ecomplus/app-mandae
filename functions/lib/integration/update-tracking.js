@@ -21,7 +21,7 @@ const parseStatus = (id) => {
 
 const listStoreIds = () => {
   const storeIds = [1024]
-  /* const date = new Date()
+  const date = new Date()
   date.setHours(date.getHours() - 72)
 
   return firestore()
@@ -35,8 +35,8 @@ const listStoreIds = () => {
         }
       })
       return storeIds
-    }) */
-    return storeIds
+    })
+
 }
 
 const fetchTracking = ({ appSdk, storeId }) => {
@@ -121,12 +121,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
 }
 
 module.exports = context => setup(null, true, firestore())
-  .then(appSdk => {
-    return listStoreIds().then(storeIds => {
-      const runAllStores = fn => storeIds
-        .sort(() => Math.random() - Math.random())
-        .map(storeId => fn({ appSdk, storeId }))
-      return Promise.all(runAllStores(fetchTracking))
-    })
+  .then(async appSdk => {
+    await fetchTracking({ appSdk, storeId: 1024 })
   })
   .catch(logger.error)
