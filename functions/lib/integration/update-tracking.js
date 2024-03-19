@@ -74,7 +74,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
                     && resultTracking.data.events.length
                     && resultTracking.data.events[0]
 
-                const status = parseStatus(trackingId.id)
+                const status = parseStatus(tracking.id)
 
                 const indexTracking = order?.metafields?.findIndex(({field}) => field === 'mandae:tracking')
                 const metaTracking = {
