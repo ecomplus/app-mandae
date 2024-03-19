@@ -1,3 +1,5 @@
+const ecomUtils = require('@ecomplus/utils')
+
 exports.post = async ({ appSdk, admin }, req, res) => {
   console.log('>> POST Tracking')
   const { body, query } = req
