@@ -16,30 +16,29 @@ exports.post = async ({ appSdk, admin }, req, res) => {
             '&shipping_lines.app.carrier=MANDAE' +
             '&fulfillment_status.current!=delivered' +
             `&shipping_lines.invoices.number=0000${number}`
-            return appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
+            return appSdk.apiRequest(storeId, ordersEndpoint, 'GET', null, auth)
               .then(({ response }) => {
-                console.log('Return from request', response.data)
+                
                 const order = response.data && response.data.result && response.data.result[0]
+                const metafields = order && order.metafields || []
+                console.log('Return from request', JSON.stringify(order))
                 const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
                 const lastEvent = findMostRecentEvent(events)
                 let status
 
                 let indexTracking
-                if (order.metafields && order.metafields.length) {
-                  const indexTracking = order?.metafields?.findIndex(({field}) => field === 'mandae:tracking')
-                }
-                const metaTracking = {
+                if (order && order.metafields && order.metafields.length) {
+                  const indexTracking = order.metafields.findIndex(({field}) => field === 'mandae:tracking')
+                  const metaTracking = {
                     _id: ecomUtils.randomObjectId(),
                     field: 'mandae:tracking',
                     value: tracking.name
-                }
-                const metafields = [
-                    ...(order.metafields || [])
-                ]
-                if (indexTracking > -1) {
+                  }
+                  if (indexTracking > -1) {
                     metafields[indexTracking] = metaTracking
-                } else {
+                  } else {
                     metafields.push(metaTracking)
+                  }
                 }
                 if (lastEvent && lastEvent.id == 121) {
                   status = 'shipped'

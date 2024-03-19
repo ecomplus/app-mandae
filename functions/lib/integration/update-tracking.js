@@ -59,6 +59,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
             if (!orders.length) return
             for (let index = 0; index < orders.length; index++) {
                 const order = orders[index];
+                const metafields = order.metafields || []
                 const { invoices: [invoice], tracking_codes } = order.shipping_lines && order.shipping_lines.length && order.shipping_lines[0]
                 const { number, serial_number } = invoice 
                 const trackingCode = `TIA${number.replace(/^0+/, '')}${serial_number.replace('0', '')}`
@@ -77,17 +78,14 @@ const fetchTracking = ({ appSdk, storeId }) => {
                 const status = parseStatus(tracking.id)
 
                 let indexTracking
-                if (order.metafields && order.metafields.length) {
-                  const indexTracking = order?.metafields?.findIndex(({field}) => field === 'mandae:tracking')
+                if (metafields && metafields.length) {
+                  indexTracking = metafields.findIndex(({field}) => field === 'mandae:tracking')
                 }
                 const metaTracking = {
                     _id: ecomUtils.randomObjectId(),
                     field: 'mandae:tracking',
                     value: tracking.name
                 }
-                const metafields = [
-                    ...(order.metafields || [])
-                ]
                 if (indexTracking > -1) {
                     metafields[indexTracking] = metaTracking
                 } else {
