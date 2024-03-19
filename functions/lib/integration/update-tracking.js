@@ -76,14 +76,17 @@ const fetchTracking = ({ appSdk, storeId }) => {
 
                 const status = parseStatus(tracking.id)
 
-                const indexTracking = order?.metafields?.findIndex(({field}) => field === 'mandae:tracking')
+                let indexTracking
+                if (order.metafields && order.metafields.length) {
+                  const indexTracking = order?.metafields?.findIndex(({field}) => field === 'mandae:tracking')
+                }
                 const metaTracking = {
                     _id: ecomUtils.randomObjectId(),
                     field: 'mandae:tracking',
                     value: tracking.name
                 }
                 const metafields = [
-                    ...order.metafields
+                    ...(order.metafields || [])
                 ]
                 if (indexTracking > -1) {
                     metafields[indexTracking] = metaTracking
