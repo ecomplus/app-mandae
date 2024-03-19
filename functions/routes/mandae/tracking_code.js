@@ -10,7 +10,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
         try {
             console.log('logado')
             const number = trackingCode.replace('TIA', '').replace('21', '')
-            const ordersEndpoint = '/orders.json?fields=_id,number,fulfillment_status,shipping_lines.invoices' +
+            const ordersEndpoint = '/orders.json?fields=_id,number,fulfillment_status,shipping_lines.invoices,metafields' +
             '&shipping_lines.app.carrier=MANDAE' +
             '&fulfillment_status.current!=delivered' +
             `&shipping_lines.invoices.number=0000${number}`
@@ -20,7 +20,22 @@ exports.post = async ({ appSdk, admin }, req, res) => {
                 const order = response.data && response.data.result && response.data.result[0]
                 const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
                 const lastEvent = findMostRecentEvent(events)
-                let status 
+                let status
+                const metaTracking = {
+                  _id: ecomUtils.randomObjectId(),
+                  field: 'mandae:tracking',
+                  value: tracking.name
+                }
+                const indexTracking = order?.metafields?.findIndex(({field}) => field === 'mandae:tracking')
+
+                const metafields = [
+                    ...order.metafields
+                ]
+                if (indexTracking > -1) {
+                    metafields[indexTracking] = metaTracking
+                } else {
+                    metafields.push(metaTracking)
+                }
                 if (lastEvent && lastEvent.id == 121) {
                   status = 'shipped'
                 } else if (lastEvent && lastEvent.id == 1) {
@@ -35,8 +50,15 @@ exports.post = async ({ appSdk, admin }, req, res) => {
                         status,
                         "mandae"
                       ]
-                    }
-                  }, auth).then(response => {
+                    },
+                    metafields
+                  }, auth).then(async response => {
+                    await appSdk.apiRequest(storeId, `/orders/${order._id}/shipping_lines/0.json`, 'PATCH', {
+                      tracking_codes: [{
+                        code: trackingCode,
+                        link: `https://rastreae.com.br/resultado/${trackingCode}`
+                      }]
+                    })
                     return res.status(200).send('ok')
                   })
                 }
