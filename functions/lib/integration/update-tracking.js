@@ -54,11 +54,11 @@ const fetchTracking = ({ appSdk, storeId }) => {
             `&created_at>=${new Date(Date.now() - 1000 * 60 * 60 * 10 * 60).toISOString()}`
         try {
             const { response } = await appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
-            console.log('response result', JSON.stringify(response.data))
+            console.log('response result', response.data && response.data.result && response.data.result.length)
             orders = response.data.result
             if (!orders.length) return
             for (let index = 0; index < orders.length; index++) {
-                const order = array[index];
+                const order = orders[index];
                 const { invoices: [invoice] } = order.shipping_lines && order.shipping_lines.length && order.shipping_lines[0]
                 const { number, serial_number } = invoice 
                 const trackingCode = `TIA${number.replace(/^0+/, '')}${serial_number.replace('0', '')}`
