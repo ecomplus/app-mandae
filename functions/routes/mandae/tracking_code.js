@@ -16,7 +16,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
             '&shipping_lines.app.carrier=MANDAE' +
             '&fulfillment_status.current!=delivered' +
             `&shipping_lines.invoices.number=0000${number}`
-            return appSdk.apiRequest(storeId, ordersEndpoint, 'GET', null, auth)
+            return appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
               .then(({ response }) => {
                 
                 const order = response.data && response.data.result && response.data.result[0]
