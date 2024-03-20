@@ -294,6 +294,12 @@ const app = {
                   description: 'Valor percentual/fixo do desconto ou acréscimo (negativo)'
                 }
               }
+            },
+            fixed: {
+              type: 'number',
+              minimum: 1,
+              maximum: 999999999,
+              title: 'Valor fixo do frete'
             }
           }
         }

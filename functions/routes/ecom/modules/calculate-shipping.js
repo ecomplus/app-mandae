@@ -79,6 +79,9 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
             }
           }
           break
+        } else if (rule.fixed) {
+          value = rule.fixed
+          break
         }
       }
     }
