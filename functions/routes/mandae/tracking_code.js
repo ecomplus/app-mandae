@@ -34,7 +34,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
                     const metaTracking = {
                       _id: ecomUtils.randomObjectId(),
                       field: 'mandae:tracking',
-                      value: tracking.name
+                      value: lastEvent.name
                     }
                     if (indexTracking > -1) {
                       metafields[indexTracking] = metaTracking
