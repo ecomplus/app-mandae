@@ -18,54 +18,58 @@ exports.post = async ({ appSdk, admin }, req, res) => {
             `&shipping_lines.invoices.number=0000${number}`
             return appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
               .then(({ response }) => {
-                
-                const order = response.data && response.data.result && response.data.result[0]
-                const metafields = order && order.metafields || []
-                console.log('Return from request', JSON.stringify(order))
-                const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
-                const lastEvent = findMostRecentEvent(events)
-                let status
+                console.log('Return from request result', JSON.stringify(response.data && response.data.result))
+                const order = response.data && response.data.result && response.data.result.length && response.data.result[0]
+                console.log('Return from request', order)
+                if (order) {
+                  const metafields = order && order.metafields || []
+                  console.log('Return from request', JSON.stringify(order))
+                  const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
+                  const lastEvent = findMostRecentEvent(events)
+                  let status
 
-                let indexTracking
-                if (order && order.metafields && order.metafields.length) {
-                  const indexTracking = order.metafields.findIndex(({field}) => field === 'mandae:tracking')
-                  const metaTracking = {
-                    _id: ecomUtils.randomObjectId(),
-                    field: 'mandae:tracking',
-                    value: tracking.name
+                  let indexTracking
+                  if (order && order.metafields && order.metafields.length) {
+                    const indexTracking = order.metafields.findIndex(({field}) => field === 'mandae:tracking')
+                    const metaTracking = {
+                      _id: ecomUtils.randomObjectId(),
+                      field: 'mandae:tracking',
+                      value: tracking.name
+                    }
+                    if (indexTracking > -1) {
+                      metafields[indexTracking] = metaTracking
+                    } else {
+                      metafields.push(metaTracking)
+                    }
                   }
-                  if (indexTracking > -1) {
-                    metafields[indexTracking] = metaTracking
-                  } else {
-                    metafields.push(metaTracking)
+                  if (lastEvent && lastEvent.id == 121) {
+                    status = 'shipped'
+                  } else if (lastEvent && lastEvent.id == 1) {
+                    status = 'delivered'
                   }
-                }
-                if (lastEvent && lastEvent.id == 121) {
-                  status = 'shipped'
-                } else if (lastEvent && lastEvent.id == 1) {
-                  status = 'delivered'
-                }
-                if (status) {
-                  return appSdk
-                  .apiRequest(storeId, `/orders/${order._id}.json`, 'PATCH', {
-                    "fulfillment_status": {
-                      "current": status,
-                      "flags": [
-                        status,
-                        "mandae"
-                      ]
-                    },
-                    metafields
-                  }, auth).then(async response => {
-                    await appSdk.apiRequest(storeId, `/orders/${order._id}/shipping_lines/0.json`, 'PATCH', {
-                      tracking_codes: [{
-                        code: trackingCode,
-                        link: `https://rastreae.com.br/resultado/${trackingCode}`
-                      }]
+                  if (status) {
+                    return appSdk
+                    .apiRequest(storeId, `/orders/${order._id}.json`, 'PATCH', {
+                      "fulfillment_status": {
+                        "current": status,
+                        "flags": [
+                          status,
+                          "mandae"
+                        ]
+                      },
+                      metafields
+                    }, auth).then(async response => {
+                      await appSdk.apiRequest(storeId, `/orders/${order._id}/shipping_lines/0.json`, 'PATCH', {
+                        tracking_codes: [{
+                          code: trackingCode,
+                          link: `https://rastreae.com.br/resultado/${trackingCode}`
+                        }]
+                      })
+                      return res.status(200).send('ok')
                     })
-                    return res.status(200).send('ok')
-                  })
+                  }
                 }
+                
                 return res.send({
                   status: 400,
                   msg: 'Didnt updated'
