@@ -50,7 +50,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
         const ordersEndpoint = '/orders.json?fields=_id,number,fulfillment_status,shipping_lines.invoices,shipping_lines.tracking_codes,metafields' +
             '&shipping_lines.app.carrier=MANDAE' +
             '&fulfillment_status.current!=delivered' +
-            '&shipping_lines.invoices.serial_number=021' +
+            '&shipping_lines.invoices.serial_number=21' +
             `&created_at>=${new Date(Date.now() - 1000 * 60 * 60 * 10 * 60).toISOString()}`
         try {
             const { response } = await appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
