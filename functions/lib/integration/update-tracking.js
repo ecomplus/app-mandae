@@ -11,8 +11,16 @@ const parseStatus = (id) => {
             return 'delivered'
             break;
         case '101':
+        case '110':
         case '31':
+        case '33':
         case '118':
+        case '160':
+        case '122':
+        case '123':
+        case '124':
+        case '119':
+        case '120':
         case '0':
         case '121':
             return 'shipped'
