@@ -73,56 +73,60 @@ const fetchTracking = ({ appSdk, storeId }) => {
                 const { invoices: [invoice], tracking_codes } = order.shipping_lines && order.shipping_lines.length && order.shipping_lines[0]
                 const { number, serial_number } = invoice 
                 const trackingCode = `TIA${number.replace(/^0+/, '')}${serial_number.replace('0', '')}`
-                const resultTracking = await axios.get(`https://api.mandae.com.br/v3/trackings/${trackingCode}`, {
+                try {
+                  const resultTracking = await axios.get(`https://api.mandae.com.br/v3/trackings/${trackingCode}`, {
                     headers: {
                         Authorization: token
                     },
                     timeout: 7000
-                })
-                if (resultTracking && resultTracking.data) {
-                  const tracking = resultTracking 
-                    && resultTracking.data 
-                    && resultTracking.data.events 
-                    && resultTracking.data.events.length
-                    && resultTracking.data.events[0]
-
-                  const status = parseStatus(tracking.id)
-
-                  let indexTracking
-                  if (metafields && metafields.length) {
-                    indexTracking = metafields.findIndex(({field}) => field === 'mandae:tracking')
-                  }
-                  const metaTracking = {
-                      _id: ecomUtils.randomObjectId(),
-                      field: 'mandae:tracking',
-                      value: tracking.name
-                  }
-                  if (indexTracking > -1) {
-                      metafields[indexTracking] = metaTracking
-                  } else {
-                      metafields.push(metaTracking)
-                  }
-                  await appSdk.apiRequest(storeId, `/orders/${order._id}.json`, 'PATCH', {
-                    metafields
                   })
-                  if (!tracking_codes) {
-                    await appSdk.apiRequest(storeId, `/orders/${order._id}/shipping_lines/0.json`, 'PATCH', {
-                      tracking_codes: [{
-                        code: trackingCode,
-                        link: `https://rastreae.com.br/resultado/${trackingCode}`
-                      }]
+                  if (resultTracking && resultTracking.data) {
+                    const tracking = resultTracking 
+                      && resultTracking.data 
+                      && resultTracking.data.events 
+                      && resultTracking.data.events.length
+                      && resultTracking.data.events[0]
+  
+                    const status = parseStatus(tracking.id)
+  
+                    let indexTracking
+                    if (metafields && metafields.length) {
+                      indexTracking = metafields.findIndex(({field}) => field === 'mandae:tracking')
+                    }
+                    const metaTracking = {
+                        _id: ecomUtils.randomObjectId(),
+                        field: 'mandae:tracking',
+                        value: tracking.name
+                    }
+                    if (indexTracking > -1) {
+                        metafields[indexTracking] = metaTracking
+                    } else {
+                        metafields.push(metaTracking)
+                    }
+                    await appSdk.apiRequest(storeId, `/orders/${order._id}.json`, 'PATCH', {
+                      metafields
                     })
-                  }
-
-                  if (
-                      status &&
-                      (!order.fulfillment_status || order.fulfillment_status.current !== status)
-                    ) {
-                      await appSdk.apiRequest(storeId, `/orders/${order._id}/fulfillments.json`, 'POST', {
-                        status,
-                        flags: ['mandae-tracking']
+                    if (!tracking_codes) {
+                      await appSdk.apiRequest(storeId, `/orders/${order._id}/shipping_lines/0.json`, 'PATCH', {
+                        tracking_codes: [{
+                          code: trackingCode,
+                          link: `https://rastreae.com.br/resultado/${trackingCode}`
+                        }]
                       })
+                    }
+  
+                    if (
+                        status &&
+                        (!order.fulfillment_status || order.fulfillment_status.current !== status)
+                      ) {
+                        await appSdk.apiRequest(storeId, `/orders/${order._id}/fulfillments.json`, 'POST', {
+                          status,
+                          flags: ['mandae-tracking']
+                        })
+                    }
                   }
+                } catch (error) {
+                  console.log('nao foi possivel buscar tracking')
                 }
             }
         } catch (err) {
