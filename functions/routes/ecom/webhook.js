@@ -1,5 +1,6 @@
 // read configured E-Com Plus app data
 const getAppData = require('./../../lib/store-api/get-app-data')
+const createTag = require('../../lib/integration/send-tag')
 
 const SKIP_TRIGGER_NAME = 'SkipTrigger'
 const ECHO_SUCCESS = 'SUCCESS'
@@ -18,66 +19,37 @@ exports.post = ({ appSdk }, req, res) => {
 
   // get app configured options
   let auth
-  return appSdk.getAuth(storeId).then(_auth => {
+  appSdk.getAuth(storeId).then(_auth => {
     auth = _auth
-    /* DO YOUR CUSTOM STUFF HERE */
-    if (trigger.resource === 'orders' && storeId == 1024) {
-      // handle order fulfillment status changes
-      const order = trigger.body
-      if (
-        order &&
-        order.fulfillment_status &&
-        order.fulfillment_status.current === 'ready_for_shipping'
-      ) {
-        // read full order body
-        const resourceId = trigger.resource_id
-        console.log('Trigger disparado para enviar tag com id:', resourceId)
-        return appSdk.apiRequest(storeId, `/orders/${resourceId}.json`, 'GET', null, auth)
-          .then(async ({ response }) => {
-            const order = response.data
-            if (order && order.shipping_lines[0] && order.shipping_lines[0].app && order.shipping_lines[0].app.carrier !== 'MANDAE') {
-              return res.send(ECHO_SKIP)
-            }
-            const now = new Date()
-            const promises = []
-            promises.push(appSdk.apiRequest(
-              storeId,
-              `/orders/${resourceId}/fulfillments.json`,
-              'POST',
-              {
-                "date_time": now.toISOString(),
-                "status": "shipped"
-              },
-              auth
-            ))
-            promises.push(appSdk.apiRequest(
-              storeId,
-              `/orders/${resourceId}/shipping_lines/0.json`,
-              'POST',
-              {
-                "tracking_codes": [
-                  {
-                    "tag": "mandae",
-                    "code": `TIA${order.number}`,
-                    "link": `https://rastreae.com.br/resultado/TIA${order.number}`
-                  }
-                ]
-              },
-              auth
-            ))
-            await Promise.all(promises).then(res => {
-              console.log('etiqueta e status enviados corretamente para:', storeId, resourceId)
-            })
-            .catch(err => {
-              console.log('nao foi criado status e etiqueta corretamente')
-            })
-          })
-          .then(() => {
-            // all done
-            res.send(ECHO_SUCCESS)
-          })
-      }
-    }
+    return getAppData({ appSdk, storeId, auth })
+      .then(appData => {
+        /* DO YOUR CUSTOM STUFF HERE */
+        if (trigger.resource === 'orders' && storeId == 1024) {
+          // handle order fulfillment status changes
+          const order = trigger.body
+          if (
+            order &&
+            order.fulfillment_status &&
+            order.fulfillment_status.current === 'ready_for_shipping'
+          ) {
+            // read full order body
+            const resourceId = trigger.resource_id
+            console.log('Trigger disparado para enviar tag com id:', resourceId)
+            return appSdk.apiRequest(storeId, `/orders/${resourceId}.json`, 'GET', null, auth)
+              .then(async ({ response }) => {
+                const order = response.data
+                if (order && order.shipping_lines[0] && order.shipping_lines[0].app && order.shipping_lines[0].app.carrier !== 'MANDAE') {
+                  return res.send(ECHO_SKIP)
+                }
+                await createTag(order, appData, storeId, appSdk)
+              })
+              .then(() => {
+                // all done
+                res.send(ECHO_SUCCESS)
+              })
+          }
+        }
+      })
   })
   .catch(err => {
     if (err.name === SKIP_TRIGGER_NAME) {

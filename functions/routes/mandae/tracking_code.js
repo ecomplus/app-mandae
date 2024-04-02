@@ -18,12 +18,9 @@ exports.post = async ({ appSdk, admin }, req, res) => {
             `&shipping_lines.invoices.number=0000${number}`
             return appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
               .then(({ response }) => {
-                console.log('Return from request result', JSON.stringify(response.data && response.data.result))
                 const order = response.data && response.data.result && response.data.result.length && response.data.result[0]
-                console.log('Return from request', order)
                 if (order) {
                   const metafields = order && order.metafields || []
-                  console.log('Return from request', JSON.stringify(order))
                   const findMostRecentEvent = events => events.reduce((a, b) => new Date(b.date) > new Date(a.date) ? b : a);
                   const lastEvent = findMostRecentEvent(events)
                   let status
