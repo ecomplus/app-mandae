@@ -416,6 +416,10 @@ procedures.push({
     {
       resource: 'orders',
       field: 'invoices'
+    },
+    {
+      resource: 'orders',
+      field: 'fulfillment_status',
     }
 
     // Feel free to create custom combinations with any Store API resource, subresource, action and field.
