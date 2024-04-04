@@ -82,13 +82,12 @@ const fetchTracking = ({ appSdk, storeId }) => {
                     },
                     timeout: 7000
                   })
-                  if (resultTracking && resultTracking.data) {
-                    const tracking = resultTracking 
+                  const tracking = resultTracking 
                       && resultTracking.data 
                       && resultTracking.data.events 
                       && resultTracking.data.events.length
                       && resultTracking.data.events[0]
-  
+                  if (tracking && tracking.id) {
                     const status = parseStatus(tracking.id)
   
                     let indexTracking
@@ -126,6 +125,8 @@ const fetchTracking = ({ appSdk, storeId }) => {
                           flags: ['mandae-tracking']
                         })
                     }
+                  } else {
+                    console.log('tracking without movimentation', trackingCode)
                   }
                 } catch (error) {
                   console.log('nao foi possivel buscar tracking', error.response)
