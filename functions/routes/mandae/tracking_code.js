@@ -6,7 +6,7 @@ exports.post = async ({ appSdk, admin }, req, res) => {
   const { trackingCode, carrierCode, events } = body
   const storeId = parseInt(query.storeId, 10)
   if (storeId > 100 && trackingCode) {
-    console.log('>> Store tracking: ', storeId, trackingCode, JSON.stringify(events), '<<')
+    console.log('>> Store tracking: ', storeId, trackingCode, '<<')
     return appSdk.getAuth(storeId)
       .then(async (auth) => {
         try {
