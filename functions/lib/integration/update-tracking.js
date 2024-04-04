@@ -126,7 +126,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
                         })
                     }
                   } else {
-                    console.log('tracking without movimentation', trackingCode)
+                    console.log('tracking without movimentation', trackingCode, order.number)
                   }
                 } catch (error) {
                   console.log('nao foi possivel buscar tracking', error.response)
