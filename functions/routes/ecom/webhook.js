@@ -28,7 +28,8 @@ exports.post = ({ appSdk }, req, res) => {
       const { mandae_token } = appData
       // const isReturn = send_tag_status_returned && order.fulfillment_status.current === 'returned_for_exchange'
       // console.log(isReturn)
-      if (appData.enable_auto_tag && mandae_token && trigger.resource === 'orders' && storeId == 1024) {
+      console.log(mandae_token && trigger.resource === 'orders' && storeId == 1024)
+      if (mandae_token && trigger.resource === 'orders' && storeId == 1024) {
         // handle order fulfillment status changes
         const order = trigger.body
         if (
