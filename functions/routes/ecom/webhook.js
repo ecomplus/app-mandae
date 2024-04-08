@@ -22,18 +22,8 @@ exports.post = ({ appSdk }, req, res) => {
   appSdk.getAuth(storeId).then(_auth => {
     auth = _auth
     return getAppData({ appSdk, storeId, auth })
-
     .then(appData => {
-      if (
-        Array.isArray(appData.ignore_triggers) &&
-        appData.ignore_triggers.indexOf(trigger.resource) > -1
-      ) {
-        // ignore current trigger
-        const err = new Error()
-        err.name = SKIP_TRIGGER_NAME
-        throw err
-      }
-
+      console.log('set trigger to send tag', trigger.resource_id)
       /* DO YOUR CUSTOM STUFF HERE */
       const { mandae_token } = appData
       // const isReturn = send_tag_status_returned && order.fulfillment_status.current === 'returned_for_exchange'
