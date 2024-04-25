@@ -87,8 +87,8 @@ const fetchTracking = ({ appSdk, storeId }) => {
                       && resultTracking.data 
                       && resultTracking.data.events 
                       && resultTracking.data.events.length
-                      && resultTracking.data.events[0]
-                  console.log('resultado tracking', JSON.stringify(tracking), JSON.stringify(resultTracking))
+                      && resultTracking.data.events[0];
+                  console.log('resultado tracking', JSON.stringify(tracking || {}), JSON.stringify(resultTracking))
                   if (tracking && tracking.id) {
                     const status = parseStatus(tracking.id)
   
