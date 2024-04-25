@@ -74,7 +74,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
                 const { invoices: [invoice], tracking_codes } = order.shipping_lines && order.shipping_lines.length && order.shipping_lines[0]
                 const { number, serial_number } = invoice 
                 const trackingCode = `TIA${number.replace(/^0+/, '')}${serial_number.replace('0', '')}`
-                console.log('tracking code', trackingCode)
+                console.log('buscando tracking code', trackingCode)
                 try {
                   const resultTracking = await axios.get(`https://api.mandae.com.br/v3/trackings/${trackingCode}`, {
                     headers: {
@@ -131,7 +131,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
                     console.log('tracking without movimentation', trackingCode, order.number)
                   }
                 } catch (error) {
-                  console.log('nao foi possivel buscar tracking', error.response)
+                  console.log('nao foi possivel buscar tracking', error)
                 }
             }
         } catch (err) {
