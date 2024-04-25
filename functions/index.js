@@ -145,7 +145,7 @@ exports.updateTokens = functions.pubsub.schedule(cron).onRun(() => {
 console.log(`-- Sheduled update E-Com Plus tokens '${cron}'`)
 
 const updateTracking = require('./lib/integration/update-tracking')
-const trackingCron = '*/10 * * * *'
+const trackingCron = '*/50 * * * *'
 exports.scheduledSync = functions.runWith({ timeoutSeconds: 360 })
   .pubsub.schedule(trackingCron).onRun(updateTracking)
 console.log(`-- Sheduled active tracking from Mandae API '${trackingCron}'`)
