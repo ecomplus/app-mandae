@@ -11,7 +11,7 @@ module.exports = async (order, storeId, appData, appSdk) => {
         const { invoices: [invoice], app, to } = order.shipping_lines && order.shipping_lines.length && order.shipping_lines[0]
         const { number, serial_number, access_key } = invoice 
         const trackingCode = `TIA${number.replace(/^0+/, '')}${serial_number.replace('0', '')}`
-        console.log(trackingCode)
+        console.log('tracking code', trackingCode)
         if (label === 'Econômico' || label === 'Rápido') {
             try {
                 const resultTracking = await axios.get(`https://api.mandae.com.br/v3/trackings/${trackingCode}`, {

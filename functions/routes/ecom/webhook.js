@@ -78,7 +78,7 @@ exports.post = ({ appSdk }, req, res) => {
                   res.send(ECHO_SUCCESS)
                 })
                 .catch(err => {
-                  console.log('deu error após gerar', err.message)
+                  console.log('deu error após gerar', err)
                 })
             })
         }

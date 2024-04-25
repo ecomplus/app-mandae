@@ -261,7 +261,7 @@ exports.post = ({ appSdk }, req, res) => {
           if (totalPrice < 0) {
             totalPrice = 0
           }
-          const discount = shipping.price - totalPrice
+          const discount = totalPrice === 0 ? shipping.price : shipping.price - totalPrice
           const shippingLine = {
             label: shipping.name,
             carrier: shipping.name,
@@ -270,6 +270,7 @@ exports.post = ({ appSdk }, req, res) => {
             shipping_line: {
               price: shipping.price,
               total_price: totalPrice,
+              flags: ['mandae-ws'],
               discount,
               delivery_time: {
                 days: shipping.days,
@@ -286,8 +287,7 @@ exports.post = ({ appSdk }, req, res) => {
                 ...params.to,
                 zip: (data.data && data.data.postalCode) || params.to.zip
               }
-            },
-            flags: ['mandae-ws']
+            }
           }
           if (Array.isArray(appData.carriers)) {
             const carrier = appData.carriers.find(({ service }) => {
