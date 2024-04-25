@@ -117,15 +117,17 @@ const fetchTracking = ({ appSdk, storeId }) => {
                         }]
                       })
                     }
-  
+                    const dateNow = new Date()
                     if (
                         status &&
                         (!order.fulfillment_status || order.fulfillment_status.current !== status)
                       ) {
                         await appSdk.apiRequest(storeId, `/orders/${order._id}/fulfillments.json`, 'POST', {
                           status,
-                          flags: ['mandae-tracking']
+                          flags: ['mandae-tracking'],
+                          date_time: dateNow.toISOString()
                         })
+                        console.log('send order', order._id, 'with success')
                     }
                   } else {
                     console.log('tracking without movimentation', trackingCode, order.number)
