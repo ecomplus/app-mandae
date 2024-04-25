@@ -66,7 +66,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
         try {
             const { response } = await appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
             console.log('response result', response.data && response.data.result && response.data.result.length)
-            orders = response.data.result
+            orders = response.data.result.slice(0,20)
             if (!orders.length) return
             for (let index = 0; index < orders.length; index++) {
                 const order = orders[index];
