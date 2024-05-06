@@ -36,11 +36,13 @@ module.exports = async (order, storeId, appData, appSdk) => {
                         ['city', 'city'],
                         ['state', 'province_code'],
                         ['reference', 'near_to']].forEach(fields => {
-                        if (fields[1] !== 'number') {
-                            address[fields[0]] = to[fields[1]]
-                        } else if (fields[1] === 'number') {
-                            address[fields[0]] = to[fields[1]] ? String(to[fields[1]]) : 'SN'
-                        } 
+                            if (fields[1] === 'zip') {
+                                address[fields[0]] = to[fields[1]] && to[fields[1]].replace(/\D/g, '')
+                            } else if (fields[1] !== 'number') {
+                                address[fields[0]] = to[fields[1]]
+                            } else if (fields[1] === 'number') {
+                                address[fields[0]] = to[fields[1]] ? String(to[fields[1]]) : 'SN'
+                            }
                     })
                     const recipient = {
                         "fullName": ecomUtils.fullName(buyer),
