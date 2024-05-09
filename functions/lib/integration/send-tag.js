@@ -95,7 +95,7 @@ module.exports = async (order, storeId, appData, appSdk) => {
                     Authorization: token
                 },
                 timeout: 7000
-            }).then(resultParcel => {
+            }).then(async resultParcel => {
                 console.log('criou etiqueta')
                 await appSdk.apiRequest(storeId, `/orders/${order._id}/shipping_lines/0.json`, 'PATCH', {
                     tracking_codes: [{

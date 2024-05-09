@@ -4,6 +4,7 @@ const logger = require('firebase-functions/logger')
 const { setup } = require('@ecomplus/application-sdk')
 const getAppData = require('../store-api/get-app-data')
 const ecomUtils = require('@ecomplus/utils')
+const sendTag = require('./send-tag')
 
 const parseStatus = (id) => {
     switch (id) {
@@ -56,7 +57,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
         const token = appData.mandae_token
         console.log('get in app')
         let orders
-        const ordersEndpoint = '/orders.json?fields=_id,number,fulfillment_status,shipping_lines.invoices,shipping_lines.tracking_codes,metafields' +
+        const ordersEndpoint = '/orders.json?fields=_id,number,amount,fulfillment_status,shipping_lines,shipping_method_label,metafields,buyers,items' +
             '&shipping_lines.app.carrier=MANDAE' +
             '&fulfillment_status.current!=delivered' +
             '&financial_status.current=paid' +
@@ -133,6 +134,9 @@ const fetchTracking = ({ appSdk, storeId }) => {
                     console.log('tracking without movimentation', trackingCode, order.number)
                   }
                 } catch (error) {
+                  if (error && error.response && error.response.status == 404) {
+                    await sendTag(order, 1024, appData, appSdk)
+                  }
                   console.log('nao foi possivel buscar tracking', error)
                 }
             }
