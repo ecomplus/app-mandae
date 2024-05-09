@@ -20,7 +20,7 @@ module.exports = async (order, storeId, appData, appSdk) => {
                     },
                     timeout: 7000
                 })
-                console.log(resultTracking.data.trackingCode)
+                console.log('já existe tracking', resultTracking.data.trackingCode)
 
             } catch (error) {
                 if (error && error.response && error.response.status == 404) {
