@@ -152,7 +152,7 @@ console.log(`-- Sheduled active tracking from Mandae API '${trackingCron}'`)
 
 
 
-const updateTracking = require('./lib/integration/get-old-tag')
+const oldTag = require('./lib/integration/get-old-tag')
 exports.scheduledSync = functions.runWith({ timeoutSeconds: 360 })
-  .pubsub.schedule(trackingCron).onRun('*/30 * * * *')
-console.log(`-- Sheduled old tags from Mandae API '${trackingCron}'`)
+  .pubsub.schedule('*/30 * * * *').onRun(oldTag)
+console.log(`-- Sheduled old tags from Mandae API */30 * * * *'`)
