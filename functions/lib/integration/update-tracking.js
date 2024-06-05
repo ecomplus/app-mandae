@@ -59,7 +59,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
         let orders
         const ordersEndpoint = '/orders.json?fields=_id,number,amount,fulfillment_status,shipping_lines,shipping_method_label,metafields,buyers,items' +
             '&shipping_lines.app.carrier=MANDAE' +
-            '&fulfillment_status.current!=delivered' +
+            '&fulfillment_status.current=ready_for_shipping' +
             '&financial_status.current=paid' +
             '&shipping_lines.invoices.serial_number=21' +
             '&sort=updated_at'
