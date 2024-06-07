@@ -65,7 +65,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
         if (rule.free_shipping) {
           value = 0
           break
-        } else if (rule.discount) {
+        } else if (rule.discount && !rule.fixed) {
           console.log('is logg for discount', JSON.stringify(rule))
           let discountValue = rule.discount.value
           if (rule.discount.percentage || rule.discount.type === 'Percentual') {
@@ -73,6 +73,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
           } else if (rule.discount.type === 'Percentual no subtotal') {
             discountValue *= (totalItems / 100)
           }
+          console.log('discount', discountValue)
           if (discountValue) {
             value -= discountValue
             if (value < 0) {
