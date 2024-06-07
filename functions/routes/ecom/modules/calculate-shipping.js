@@ -66,6 +66,7 @@ const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shippi
           value = 0
           break
         } else if (rule.discount) {
+          console.log('is logg for discount', JSON.stringify(rule))
           let discountValue = rule.discount.value
           if (rule.discount.percentage || rule.discount.type === 'Percentual') {
             discountValue *= (value / 100)
