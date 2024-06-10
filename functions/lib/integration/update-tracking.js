@@ -6,27 +6,31 @@ const getAppData = require('../store-api/get-app-data')
 const ecomUtils = require('@ecomplus/utils')
 const sendTag = require('./send-tag')
 
-const parseStatus = (id) => {
-    switch (id) {
-        case '1':
-            return 'delivered'
-            break;
-        case '101':
-        case '110':
-        case '31':
-        case '33':
-        case '118':
-        case '160':
-        case '122':
-        case '123':
-        case '124':
-        case '119':
-        case '120':
-        case '0':
-        case '121':
-            return 'shipped'
-            break;
-    }
+
+const parseStatus = (id, name) => {
+  switch (id) {
+      case '1':
+          return 'delivered'
+          break;
+      case '101':
+      case '110':
+      case '31':
+      case '33':
+      case '118':
+      case '160':
+      case '122':
+      case '123':
+      case '124':
+      case '119':
+      case '120':
+      case '0':
+      case '121':
+          return 'shipped'
+          break;
+  }
+  if (name === 'Encomenda coletada') {
+    return 'shipped'
+  }
 }
 
 const listStoreIds = () => {
@@ -90,7 +94,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
                       && resultTracking.data.events[0];
                       
                   if (tracking && tracking.id) {
-                    const status = parseStatus(tracking.id)
+                    const status = parseStatus(tracking.id, tracking.name)
   
                     let indexTracking
                     if (metafields && metafields.length) {
