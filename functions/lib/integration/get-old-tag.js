@@ -62,7 +62,7 @@ const fetchTracking = ({ appSdk, storeId }) => {
             '&fulfillment_status.current=ready_for_shipping' +
             '&financial_status.current=paid' +
             '&shipping_lines.invoices.serial_number=21' +
-            `&created_at>=${new Date(Date.now() - 1000 * 60 * 60 * 1 * 60).toISOString()}` +
+            `&created_at>=2024-06-19T00:00:10.278Z` +
             `&sort=updated_at`
         try {
             const { response } = await appSdk.apiRequest(storeId, ordersEndpoint, 'GET')
