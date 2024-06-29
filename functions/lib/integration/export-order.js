@@ -31,7 +31,7 @@ module.exports = async (
         storeId,
         `/orders/${order._id}/shipping_lines/${shippingLine._id}.json`,
         'PATCH',
-        lineTrackingCodes,
+        { tracking_codes: lineTrackingCodes },
         auth
       )
     }
