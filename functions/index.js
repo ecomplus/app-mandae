@@ -146,6 +146,6 @@ console.log(`-- Sheduled update E-Com Plus tokens '${cron}'`)
 
 const cronSendOrders = '*/30 * * * *'
 const sendWaitingOrders = require('./lib/integration/send-waiting-orders')
-exports.sendAllTags = functions.runWith({ timeoutSeconds: 300 })
+exports.sendWaitingOrders = functions.runWith({ timeoutSeconds: 300 })
   .pubsub.schedule(cronSendOrders).onRun(sendWaitingOrders)
 console.log(`-- Sheduled send tags to Mandae API ${cronSendOrders}`)

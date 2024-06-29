@@ -78,10 +78,17 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
                 { order, mandaeToken, mandaeOrderSettings }
               )
             }
-          } catch (err) {
-            logger.error(err)
+          } catch (_err) {
+            if (_err.response) {
+              const err = new Error(`Failed exporting order for #${storeId}`)
+              logger.error(err, {
+                request: _err.config,
+                response: _err.response.data
+              })
+            } else {
+              logger.error(_err)
+            }
           }
-          exportOrder().catch(logger.error)
         }
       })
       .catch(reject)
