@@ -63,9 +63,9 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
               ',shipping_method_label,metafields,buyers' +
               ',items.sku,items.name,items.final_price,items.price,items.quantity' +
             '&shipping_lines.app.carrier=MANDAE' +
+            '&shipping_lines.tracking_codes.tag!=mandae' +
             '&financial_status.current=paid' +
             '&fulfillment_status.current=ready_for_shipping' +
-            '&metafields.field!=mandae:tracking' +
             '&sort=number' +
             '&limit=100'
           try {

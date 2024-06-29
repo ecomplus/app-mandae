@@ -19,6 +19,7 @@ module.exports = async (
   const trackingId = (mandaeOrderSettings.tracking_prefix || '') +
     invoice.number.replace(/^0+/, '') +
     invoice.serial_number.replace(/^0+/, '')
+  logger.info(`Sending #${storeId} ${number} with tracking ID ${trackingId}`)
   const { customerId, sender, channel, store } = mandaeOrderSettings.data
   const data = {
     customerId,
@@ -72,6 +73,7 @@ module.exports = async (
     'PATCH',
     {
       tracking_codes: [{
+        tag: 'mandae',
         code: trackingId,
         link: `https://rastreae.com.br/resultado/${trackingId}`
       }]
