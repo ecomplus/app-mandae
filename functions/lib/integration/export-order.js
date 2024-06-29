@@ -13,12 +13,32 @@ module.exports = async (
   if (!shippingLine?.to) return
   const invoice = shippingLine.invoices?.[0]
   if (!invoice?.number || !invoice.serial_number || !invoice.access_key) {
-    logger.warn(`Skipping #${storeId} order ${number} without invoice data`)
+    logger.warn(`Skipping #${storeId} ${number} without invoice data`)
     return
   }
   const trackingId = (mandaeOrderSettings.tracking_prefix || '') +
     invoice.number.replace(/^0+/, '') +
     invoice.serial_number.replace(/^0+/, '')
+  const savedTrackingCode = shippingLine.tracking_codes?.find(({ code }) => {
+    return code === trackingId
+  })
+  if (savedTrackingCode) {
+    logger.warn(`Skipping #${storeId} ${number} with tracking code already set`)
+    if (!savedTrackingCode.tag) {
+      await appSdk.apiRequest(
+        storeId,
+        `/orders/${order._id}/shipping_lines/${shippingLine._id}.json`,
+        'PATCH',
+        {
+          tracking_codes: shippingLine.tracking_codes.map(trackingCode => ({
+            tag: 'mandae',
+            ...trackingCode
+          }))
+        }
+      )
+    }
+    return
+  }
   logger.info(`Sending #${storeId} ${number} with tracking ID ${trackingId}`)
   const { customerId, sender, channel, store } = mandaeOrderSettings.data
   const data = {
