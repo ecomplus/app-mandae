@@ -23,8 +23,9 @@ const listStoreIds = () => {
 }
 
 const fetchWaitingOrders = async ({ appSdk, storeId }) => {
+  const auth = await appSdk.getAuth(storeId)
   return new Promise((resolve, reject) => {
-    getAppData({ appSdk, storeId })
+    getAppData({ appSdk, storeId, auth })
       .then(async (appData) => {
         resolve()
         if (storeId === 1024) {
@@ -74,7 +75,7 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
             for (let i = 0; i < orders.length; i++) {
               const order = orders[i]
               await exportOrder(
-                { appSdk, storeId },
+                { appSdk, storeId, auth },
                 { order, mandaeToken, mandaeOrderSettings }
               )
             }

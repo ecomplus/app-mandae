@@ -3,7 +3,7 @@ const axios = require('axios')
 const ecomUtils = require('@ecomplus/utils')
 
 module.exports = async (
-  { appSdk, storeId },
+  { appSdk, storeId, auth },
   { order, mandaeToken, mandaeOrderSettings }
 ) => {
   const { number } = order
@@ -19,22 +19,20 @@ module.exports = async (
   const trackingId = (mandaeOrderSettings.tracking_prefix || '') +
     invoice.number.replace(/^0+/, '') +
     invoice.serial_number.replace(/^0+/, '')
-  const savedTrackingCode = shippingLine.tracking_codes?.find(({ code }) => {
+  const lineTrackingCodes = shippingLine.tracking_codes || []
+  const savedTrackingCode = lineTrackingCodes.find(({ code }) => {
     return code === trackingId
   })
   if (savedTrackingCode) {
     logger.warn(`Skipping #${storeId} ${number} with tracking code already set`)
     if (!savedTrackingCode.tag) {
+      savedTrackingCode.tag = 'mandae'
       await appSdk.apiRequest(
         storeId,
         `/orders/${order._id}/shipping_lines/${shippingLine._id}.json`,
         'PATCH',
-        {
-          tracking_codes: shippingLine.tracking_codes.map(trackingCode => ({
-            tag: 'mandae',
-            ...trackingCode
-          }))
-        }
+        lineTrackingCodes,
+        auth
       )
     }
     return
@@ -83,20 +81,30 @@ module.exports = async (
     }],
     observation: null
   }
-  await axios.post('https://api.mandae.com.br/v2/orders/add-parcel', data, {
-    headers: { Authorization: mandaeToken },
-    timeout: 7000
-  })
+  try {
+    await axios.post('https://api.mandae.com.br/v2/orders/add-parcel', data, {
+      headers: { Authorization: mandaeToken },
+      timeout: 7000
+    })
+  } catch (error) {
+    if (!error.response?.data?.error?.message?.endsWith(' já foi utilizado')) {
+      throw error
+    }
+  }
   await appSdk.apiRequest(
     storeId,
     `/orders/${order._id}/shipping_lines/${shippingLine._id}.json`,
     'PATCH',
     {
-      tracking_codes: [{
-        tag: 'mandae',
-        code: trackingId,
-        link: `https://rastreae.com.br/resultado/${trackingId}`
-      }]
-    }
+      tracking_codes: [
+        {
+          tag: 'mandae',
+          code: trackingId,
+          link: `https://rastreae.com.br/resultado/${trackingId}`
+        },
+        ...lineTrackingCodes
+      ]
+    },
+    auth
   )
 }
