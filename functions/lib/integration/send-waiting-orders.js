@@ -67,6 +67,7 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
             '&shipping_lines.tracking_codes.tag!=mandae' +
             '&financial_status.current=paid' +
             '&fulfillment_status.current=ready_for_shipping' +
+            `&updated_at>=${d.toISOString()}` +
             '&sort=number' +
             '&limit=100'
           try {
