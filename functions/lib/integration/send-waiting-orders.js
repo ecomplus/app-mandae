@@ -69,7 +69,7 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
             '&fulfillment_status.current=ready_for_shipping' +
             `&updated_at>=${d.toISOString()}` +
             '&sort=number' +
-            '&limit=100'
+            '&limit=200'
           try {
             const { response } = await appSdk.apiRequest(storeId, endpoint, 'GET')
             const orders = response.data.result
