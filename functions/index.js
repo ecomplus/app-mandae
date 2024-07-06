@@ -149,3 +149,9 @@ const sendWaitingOrders = require('./lib/integration/send-waiting-orders')
 exports.sendWaitingOrders = functions.runWith({ timeoutSeconds: 300 })
   .pubsub.schedule(cronSendOrders).onRun(sendWaitingOrders)
 console.log(`-- Sheduled send tags to Mandae API ${cronSendOrders}`)
+
+const cronTracking = '*/50 * * * *'
+const updateTracking = require('./lib/integration/update-tracking')
+exports.updateTracking = functions.runWith({ timeoutSeconds: 300 })
+  .pubsub.schedule(cronTracking).onRun(updateTracking)
+console.log(`-- Sheduled send tags to Mandae API ${cronTracking}`)
