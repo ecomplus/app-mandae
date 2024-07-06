@@ -488,7 +488,7 @@ const procedures = []
 
 /**
  * Uncomment and edit code above to configure `triggers` and receive respective `webhooks`:
-*/
+
 const { baseUri } = require('./__env')
 
 procedures.push({
@@ -519,7 +519,7 @@ procedures.push({
     }
   ]
 })
-/*
+
  * You may also edit `routes/ecom/webhook.js` to treat notifications properly.
  */
 

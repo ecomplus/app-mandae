@@ -2,7 +2,7 @@ const { firestore } = require('firebase-admin')
 const { setup } = require('@ecomplus/application-sdk')
 const logger = require('firebase-functions/logger')
 const getAppData = require('../store-api/get-app-data')
-const exportOrder = require('./export-order')
+const importOrderStatus = require('./import-order-status')
 
 const listStoreIds = () => {
   const storeIds = []
@@ -22,51 +22,25 @@ const listStoreIds = () => {
     })
 }
 
-const fetchWaitingOrders = async ({ appSdk, storeId }) => {
+const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
   const auth = await appSdk.getAuth(storeId)
   return new Promise((resolve, reject) => {
     getAppData({ appSdk, storeId, auth })
       .then(async (appData) => {
         resolve()
-        if (storeId === 1024) {
-          appData.__order_settings = {
-            tracking_prefix: 'TIA',
-            data: {
-              customerId: 'E6A2C7449FB84AB797CB1328BF1F8952',
-              sender: {
-                fullName: 'Tia Sonia',
-                email: 'ecommerce@tiasonia.com.br',
-                document: '08385685000739',
-                ie: '206748880112',
-                address: {
-                  postalCode: '06422120',
-                  street: 'Avenida Gupê',
-                  number: '10767',
-                  neighborhood: 'Jardim Belval',
-                  addressLine2: 'Galpões 15, 24 e 25',
-                  city: 'Barueri',
-                  state: 'SP',
-                  country: 'BR'
-                }
-              },
-              channel: 'ecommerce',
-              store: 'Tia Sônia'
-            }
-          }
+        let mandaeTrackingPrefix = appData.__order_settings?.tracking_prefix
+        if (mandaeTrackingPrefix === undefined) {
+          mandaeTrackingPrefix = storeId === 1024 ? 'TIA' : ''
         }
         const mandaeToken = appData.mandae_token
-        const mandaeOrderSettings = appData.__order_settings
-        if (mandaeToken && mandaeOrderSettings?.data) {
+        if (mandaeToken) {
           const d = new Date()
-          d.setDate(d.getDate() - 14)
+          d.setDate(d.getDate() - 30)
           const endpoint = '/orders.json' +
-            '?fields=_id,number,amount,fulfillment_status,shipping_lines' +
-              ',shipping_method_label,buyers' +
-              ',items.sku,items.name,items.final_price,items.price,items.quantity' +
-            '&shipping_lines.app.carrier=MANDAE' +
-            '&shipping_lines.tracking_codes.tag!=mandae' +
+            '?fields=_id,number,fulfillment_status,shipping_lines' +
+            '&shipping_lines.tracking_codes.tag=mandae' +
             '&financial_status.current=paid' +
-            '&fulfillment_status.current=ready_for_shipping' +
+            '&fulfillment_status.current!=delivered' +
             `&updated_at>=${d.toISOString()}` +
             '&sort=number' +
             '&limit=200'
@@ -75,9 +49,9 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
             const orders = response.data.result
             for (let i = 0; i < orders.length; i++) {
               const order = orders[i]
-              await exportOrder(
+              await importOrderStatus(
                 { appSdk, storeId, auth },
-                { order, mandaeToken, mandaeOrderSettings }
+                { order, mandaeToken, mandaeTrackingPrefix }
               )
             }
           } catch (_err) {
@@ -103,7 +77,7 @@ module.exports = context => setup(null, true, firestore())
       const runAllStores = fn => storeIds
         .sort(() => Math.random() - Math.random())
         .map(storeId => fn({ appSdk, storeId }))
-      return Promise.all(runAllStores(fetchWaitingOrders))
+      return Promise.all(runAllStores(fetchUndeliveredOrders))
     })
   })
   .catch(logger.error)
