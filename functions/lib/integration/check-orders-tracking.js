@@ -42,7 +42,7 @@ const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
             '&financial_status.current=paid' +
             '&fulfillment_status.current!=delivered' +
             `&updated_at>=${d.toISOString()}` +
-            '&sort=number' +
+            '&sort=updated_at' +
             '&limit=200'
           try {
             const { response } = await appSdk.apiRequest(storeId, endpoint, 'GET')
