@@ -33,7 +33,7 @@ const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
           mandaeTrackingPrefix = storeId === 1024 ? 'TIA' : ''
         }
         const mandaeToken = appData.mandae_token
-        if (mandaeToken) {
+        if (mandaeToken && mandaeTrackingPrefix) {
           const d = new Date()
           d.setDate(d.getDate() - 30)
           const endpoint = '/orders.json' +
