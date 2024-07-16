@@ -83,7 +83,7 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
                 )
               } catch (error) {
                 if (error.response?.data?.error?.code === '422') {
-                  const err = new Error(`Failed exporting order ${order} for #${storeId}`)
+                  const err = new Error(`Failed exporting order ${order.number} for #${storeId}`)
                   logger.error(err, {
                     request: error.config,
                     response: error.response.data
