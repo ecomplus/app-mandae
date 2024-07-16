@@ -73,16 +73,29 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
           try {
             const { response } = await appSdk.apiRequest(storeId, endpoint, 'GET')
             const orders = response.data.result
+            logger.info(`Start exporting orders for #${storeId}`, { orders })
             for (let i = 0; i < orders.length; i++) {
               const order = orders[i]
-              await exportOrder(
-                { appSdk, storeId, auth },
-                { order, mandaeToken, mandaeOrderSettings }
-              )
+              try {
+                await exportOrder(
+                  { appSdk, storeId, auth },
+                  { order, mandaeToken, mandaeOrderSettings }
+                )
+              } catch (error) {
+                if (error.response?.data?.error?.code === '422') {
+                  const err = new Error(`Failed exporting order ${order} for #${storeId}`)
+                  logger.error(err, {
+                    request: _err.config,
+                    response: _err.response.data
+                  })
+                } else {
+                  throw error
+                }
+              }
             }
           } catch (_err) {
             if (_err.response) {
-              const err = new Error(`Failed exporting order for #${storeId}`)
+              const err = new Error(`Failed exporting orders for #${storeId}`)
               logger.error(err, {
                 request: _err.config,
                 response: _err.response.data
