@@ -229,11 +229,7 @@ exports.post = ({ appSdk }, req, res) => {
       quantity: 1
     }]
   }
-  if (storeId == 51372) {
-    console.log('item', JSON.stringify(items))
-    console.log('bigger box kg', kgWeightBiggerBox)
-    console.log('bigger box dimension', JSON.stringify(cmDimensionsBiggerBox))
-  }
+
   const mandaeToken = appData.mandae_token
   const mandaeUrl = 'https://api.mandae.com.br'
 
