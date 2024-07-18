@@ -128,12 +128,45 @@ exports.post = ({ appSdk }, req, res) => {
   if (appData.free_shipping_from_value >= 0) {
     response.free_shipping_from_value = appData.free_shipping_from_value
   }
-
+  let originZip, warehouseCode, docNumber
   const destinationZip = params.to ? params.to.zip.replace(/\D/g, '') : ''
 
-  const originZip = params.from
-    ? params.from.zip.replace(/\D/g, '')
-    : appData.zip ? appData.zip.replace(/\D/g, '') : ''
+  let postingDeadline = appData.posting_deadline
+  let isWareHouse = false
+  if (params.from) {
+    originZip = params.from.zip
+  } else if (Array.isArray(appData.warehouses) && appData.warehouses.length) {
+    for (let i = 0; i < appData.warehouses.length; i++) {
+      const warehouse = appData.warehouses[i]
+      if (warehouse && warehouse.zip && checkZipCode(warehouse)) {
+        const { code } = warehouse
+        if (!code) {
+          continue
+        }
+        if (
+          params.items &&
+          params.items.find(({ quantity, inventory }) => inventory && Object.keys(inventory).length && !(inventory[code] >= quantity))
+        ) {
+          // item not available on current warehouse
+          continue
+        }
+        originZip = warehouse.zip
+        isWareHouse = true
+        if (warehouse.posting_deadline) {
+          postingDeadline = warehouse.posting_deadline
+        }
+        if (warehouse.doc) {
+          docNumber = warehouse.doc
+        }
+        warehouseCode = code
+      }
+    }
+  }
+
+  if (!originZip) {
+    originZip = appData.zip
+  }
+  originZip = typeof originZip === 'string' ? originZip.replace(/\D/g, '') : ''
 
   // search for configured free shipping rule
   if (Array.isArray(appData.shipping_rules)) {
@@ -274,7 +307,7 @@ exports.post = ({ appSdk }, req, res) => {
               },
               posting_deadline: {
                 days: 3,
-                ...appData.posting_deadline
+                ...postingDeadline
               },
               from: {
                 zip: originZip
@@ -297,6 +330,9 @@ exports.post = ({ appSdk }, req, res) => {
                 shippingLine.carrier_doc_number = carrier.carrier_doc_number.replace(/\D/g, '')
               }
             }
+          }
+          if (docNumber) {
+            shippingLine.carrier_doc_number = docNumber
           }
           response.shipping_services.push(shippingLine)
         }
