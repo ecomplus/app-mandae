@@ -108,7 +108,7 @@ exports.post = ({ appSdk }, req, res) => {
    * JSON Schema reference for Calculate Shipping module objects:
    * `params`: https://apx-mods.e-com.plus/api/v1/calculate_shipping/schema.json?store_id=100
    * `response`: https://apx-mods.e-com.plus/api/v1/calculate_shipping/response_schema.json?store_id=100
-   * 
+   *
    * Examples in published apps:
    * https://github.com/ecomplus/app-mandabem/blob/master/functions/routes/ecom/modules/calculate-shipping.js
    * https://github.com/ecomplus/app-datafrete/blob/master/functions/routes/ecom/modules/calculate-shipping.js
@@ -116,7 +116,7 @@ exports.post = ({ appSdk }, req, res) => {
    */
 
   const { params, application } = req.body
-  const { storeId } = req
+  // const { storeId } = req
   // setup basic required response object
   const response = {
     shipping_services: []
@@ -128,35 +128,27 @@ exports.post = ({ appSdk }, req, res) => {
   if (appData.free_shipping_from_value >= 0) {
     response.free_shipping_from_value = appData.free_shipping_from_value
   }
-  let originZip, warehouseCode, docNumber
   const destinationZip = params.to ? params.to.zip.replace(/\D/g, '') : ''
 
+  let originZip, warehouseCode
   let postingDeadline = appData.posting_deadline
-  let isWareHouse = false
   if (params.from) {
     originZip = params.from.zip
   } else if (Array.isArray(appData.warehouses) && appData.warehouses.length) {
     for (let i = 0; i < appData.warehouses.length; i++) {
       const warehouse = appData.warehouses[i]
-      if (warehouse && warehouse.zip && checkZipCode(warehouse)) {
+      if (warehouse?.zip && checkZipCode(warehouse)) {
         const { code } = warehouse
-        if (!code) {
-          continue
-        }
-        if (
-          params.items &&
-          params.items.find(({ quantity, inventory }) => inventory && Object.keys(inventory).length && !(inventory[code] >= quantity))
-        ) {
-          // item not available on current warehouse
-          continue
+        if (!code) continue
+        if (params.items) {
+          const itemNotOnWarehouse = params.items.find(({ quantity, inventory }) => {
+            return inventory && Object.keys(inventory).length && !(inventory[code] >= quantity)
+          })
+          if (itemNotOnWarehouse) continue
         }
         originZip = warehouse.zip
-        isWareHouse = true
-        if (warehouse.posting_deadline) {
+        if (warehouse.posting_deadline?.days) {
           postingDeadline = warehouse.posting_deadline
-        }
-        if (warehouse.doc) {
-          docNumber = warehouse.doc
         }
         warehouseCode = code
       }
@@ -237,7 +229,6 @@ exports.post = ({ appSdk }, req, res) => {
           }
         }
       }
-      
       totalItems += (ecomUtils.price(item) * item.quantity)
       items.push(
         {
@@ -299,6 +290,7 @@ exports.post = ({ appSdk }, req, res) => {
             shipping_line: {
               price: shipping.price,
               total_price: totalPrice,
+              warehouse_code: warehouseCode,
               flags: ['mandae-ws'],
               discount,
               delivery_time: {
@@ -330,9 +322,6 @@ exports.post = ({ appSdk }, req, res) => {
                 shippingLine.carrier_doc_number = carrier.carrier_doc_number.replace(/\D/g, '')
               }
             }
-          }
-          if (docNumber) {
-            shippingLine.carrier_doc_number = docNumber
           }
           response.shipping_services.push(shippingLine)
         }

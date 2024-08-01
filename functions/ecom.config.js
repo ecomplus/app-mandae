@@ -411,12 +411,6 @@ const app = {
               pattern: '^[A-Za-z0-9-_]{2,30}$',
               title: 'Código do CD'
             },
-            doc: {
-              type: 'string',
-              maxLength: 255,
-              title: 'Documento da filial',
-              description: 'CNPJ da filial associado à sua conta Mandae'
-            },
             zip: {
               type: 'string',
               maxLength: 9,
