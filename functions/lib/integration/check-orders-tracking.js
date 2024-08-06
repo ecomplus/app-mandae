@@ -49,14 +49,29 @@ const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
             const orders = response.data.result
             for (let i = 0; i < orders.length; i++) {
               const order = orders[i]
-              await importOrderStatus(
-                { appSdk, storeId, auth },
-                { order, mandaeToken, mandaeTrackingPrefix }
-              )
+              try {
+                await importOrderStatus(
+                  { appSdk, storeId, auth },
+                  { order, mandaeToken, mandaeTrackingPrefix }
+                )
+              } catch (error) {
+                if (
+                  error.response?.data?.error?.code === '404' ||
+                  (error.response?.status > 403 && error.response.status < 500)
+                ) {
+                  const err = new Error(`Failed importing order ${order.number} status for #${storeId}`)
+                  logger.error(err, {
+                    request: error.config,
+                    response: error.response.data
+                  })
+                } else {
+                  throw error
+                }
+              }
             }
           } catch (_err) {
             if (_err.response) {
-              const err = new Error(`Failed importing order status for #${storeId}`)
+              const err = new Error(`Failed importing orders status for #${storeId}`)
               logger.error(err, {
                 request: _err.config,
                 response: _err.response.data
