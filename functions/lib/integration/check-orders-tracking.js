@@ -56,7 +56,7 @@ const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
             }
           } catch (_err) {
             if (_err.response) {
-              const err = new Error(`Failed exporting order for #${storeId}`)
+              const err = new Error(`Failed importing order status for #${storeId}`)
               logger.error(err, {
                 request: _err.config,
                 response: _err.response.data
