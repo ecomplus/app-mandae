@@ -6,6 +6,34 @@ module.exports = async (
   { appSdk, storeId, auth },
   { order, mandaeToken, mandaeOrderSettings }
 ) => {
+  if (!mandaeOrderSettings) {
+    if (storeId === 1024) {
+      mandaeOrderSettings = {
+        tracking_prefix: 'TIA',
+        data: {
+          customerId: 'E6A2C7449FB84AB797CB1328BF1F8952',
+          sender: {
+            fullName: 'Tia Sonia',
+            email: 'ecommerce@tiasonia.com.br',
+            document: '08385685000739',
+            ie: '206748880112',
+            address: {
+              postalCode: '06422120',
+              street: 'Avenida Gupê',
+              number: '10767',
+              neighborhood: 'Jardim Belval',
+              addressLine2: 'Galpões 15, 24 e 25',
+              city: 'Barueri',
+              state: 'SP',
+              country: 'BR'
+            }
+          },
+          channel: 'ecommerce',
+          store: 'Tia Sônia'
+        }
+      }
+    }
+  }
   const { number } = order
   const buyer = order.buyers?.[0]
   if (!buyer) return

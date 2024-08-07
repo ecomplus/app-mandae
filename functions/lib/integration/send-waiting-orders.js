@@ -28,35 +28,9 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
     getAppData({ appSdk, storeId, auth })
       .then(async (appData) => {
         resolve()
-        if (storeId === 1024) {
-          appData.__order_settings = {
-            tracking_prefix: 'TIA',
-            data: {
-              customerId: 'E6A2C7449FB84AB797CB1328BF1F8952',
-              sender: {
-                fullName: 'Tia Sonia',
-                email: 'ecommerce@tiasonia.com.br',
-                document: '08385685000739',
-                ie: '206748880112',
-                address: {
-                  postalCode: '06422120',
-                  street: 'Avenida Gupê',
-                  number: '10767',
-                  neighborhood: 'Jardim Belval',
-                  addressLine2: 'Galpões 15, 24 e 25',
-                  city: 'Barueri',
-                  state: 'SP',
-                  country: 'BR'
-                }
-              },
-              channel: 'ecommerce',
-              store: 'Tia Sônia'
-            }
-          }
-        }
         const mandaeToken = appData.mandae_token
         const mandaeOrderSettings = appData.__order_settings
-        if (mandaeToken && mandaeOrderSettings?.data) {
+        if (mandaeToken && (mandaeOrderSettings?.data || storeId === 1024)) {
           const d = new Date()
           d.setDate(d.getDate() - 14)
           const endpoint = '/orders.json' +

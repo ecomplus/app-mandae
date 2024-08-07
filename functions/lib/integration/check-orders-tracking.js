@@ -28,12 +28,9 @@ const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
     getAppData({ appSdk, storeId, auth })
       .then(async (appData) => {
         resolve()
-        let mandaeTrackingPrefix = appData.__order_settings?.tracking_prefix
-        if (mandaeTrackingPrefix === undefined) {
-          mandaeTrackingPrefix = storeId === 1024 ? 'TIA' : ''
-        }
         const mandaeToken = appData.mandae_token
-        if (mandaeToken && mandaeTrackingPrefix) {
+        const mandaeOrderSettings = appData.__order_settings
+        if (mandaeToken && (mandaeOrderSettings?.data || storeId === 1024)) {
           const d = new Date()
           d.setDate(d.getDate() - 30)
           const endpoint = '/orders.json' +
@@ -52,7 +49,7 @@ const fetchUndeliveredOrders = async ({ appSdk, storeId }) => {
               try {
                 await importOrderStatus(
                   { appSdk, storeId, auth },
-                  { order, mandaeToken, mandaeTrackingPrefix }
+                  { order, mandaeToken, mandaeOrderSettings }
                 )
               } catch (error) {
                 if (

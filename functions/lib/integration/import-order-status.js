@@ -1,5 +1,6 @@
 const logger = require('firebase-functions/logger')
 const axios = require('axios')
+const exportOrder = require('./export-order')
 
 const parseMandaeStatus = ({ id, name }) => {
   switch (id) {
@@ -30,7 +31,7 @@ const parseMandaeStatus = ({ id, name }) => {
 
 module.exports = async (
   { appSdk, storeId, auth },
-  { order, mandaeToken, mandaeTrackingPrefix }
+  { order, mandaeToken, mandaeOrderSettings }
 ) => {
   const { number } = order
   const shippingLine = order.shipping_lines?.find(({ app }) => app?.carrier === 'MANDAE')
@@ -40,7 +41,11 @@ module.exports = async (
     logger.warn(`Skipping #${storeId} ${number} without invoice data`)
     return
   }
-  const trackingId = (mandaeTrackingPrefix || '') +
+  let mandaeTrackingPrefix = mandaeOrderSettings?.tracking_prefix
+  if (mandaeTrackingPrefix === undefined) {
+    mandaeTrackingPrefix = storeId === 1024 ? 'TIA' : ''
+  }
+  const trackingId = mandaeTrackingPrefix +
     invoice.number.replace(/^0+/, '') +
     invoice.serial_number.replace(/^0+/, '')
   logger.info(`Tracking #${storeId} ${number} with ID ${trackingId}`)
@@ -51,6 +56,18 @@ module.exports = async (
   const trackingResult = data?.events?.[0]
   if (!trackingResult) return
   const status = parseMandaeStatus(trackingResult)
+  const lineTrackingCodes = shippingLine.tracking_codes || []
+  const savedTrackingCode = lineTrackingCodes.find(({ code }) => {
+    return code === trackingId
+  })
+  if (!savedTrackingCode && status !== 'delivered') {
+    logger.info(`Re-exporting #${storeId} ${number} with ID ${trackingId}`)
+    await exportOrder(
+      { appSdk, storeId, auth },
+      { order, mandaeToken, mandaeOrderSettings }
+    )
+    return
+  }
   if (!status) {
     logger.warn(`No parsed fulfillment status for #${storeId} ${number}`, {
       trackingId,
@@ -58,7 +75,6 @@ module.exports = async (
     })
     return
   }
-  const lineTrackingCodes = shippingLine.tracking_codes || []
   if (!lineTrackingCodes.find(({ code }) => code === trackingId)) {
     lineTrackingCodes.push({
       tag: 'mandae',
