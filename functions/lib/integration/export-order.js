@@ -65,7 +65,7 @@ module.exports = async (
           postalCode: shippingLine.to.zip.replace(/\D/g, ''),
           number: shippingLine.to.number?.toString() || 'SN',
           street: shippingLine.to.street,
-          neighborhood: shippingLine.to.borough,
+          neighborhood: shippingLine.to.borough || 'Centro',
           addressLine2: shippingLine.to.complement,
           city: shippingLine.to.city,
           state: shippingLine.to.province_code,
