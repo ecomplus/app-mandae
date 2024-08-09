@@ -22,7 +22,7 @@ const listStoreIds = () => {
     })
 }
 
-const fetchWaitingOrders = async ({ appSdk, storeId }) => {
+const fetchWaitingOrders = async ({ appSdk, storeId }, isOddExec) => {
   const auth = await appSdk.getAuth(storeId)
   return new Promise((resolve, reject) => {
     getAppData({ appSdk, storeId, auth })
@@ -42,7 +42,7 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
             '&financial_status.current=paid' +
             '&fulfillment_status.current=ready_for_shipping' +
             `&updated_at>=${d.toISOString()}` +
-            '&sort=number' +
+            `&sort=${(isOddExec ? '-' : '')}number` +
             '&limit=200'
           try {
             const { response } = await appSdk.apiRequest(storeId, endpoint, 'GET')
@@ -84,13 +84,16 @@ const fetchWaitingOrders = async ({ appSdk, storeId }) => {
   })
 }
 
-module.exports = context => setup(null, true, firestore())
-  .then(appSdk => {
-    return listStoreIds().then(storeIds => {
-      const runAllStores = fn => storeIds
-        .sort(() => Math.random() - Math.random())
-        .map(storeId => fn({ appSdk, storeId }))
-      return Promise.all(runAllStores(fetchWaitingOrders))
+module.exports = (context) => {
+  const isOddExec = !!(new Date().getMinutes() % 2)
+  return setup(null, true, firestore())
+    .then(appSdk => {
+      return listStoreIds().then(storeIds => {
+        const runAllStores = fn => storeIds
+          .sort(() => Math.random() - Math.random())
+          .map(storeId => fn({ appSdk, storeId }, isOddExec))
+        return Promise.all(runAllStores(fetchWaitingOrders))
+      })
     })
-  })
-  .catch(logger.error)
+    .catch(logger.error)
+}

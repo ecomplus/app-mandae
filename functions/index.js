@@ -144,13 +144,13 @@ exports.updateTokens = functions.pubsub.schedule(cron).onRun(() => {
 })
 console.log(`-- Sheduled update E-Com Plus tokens '${cron}'`)
 
-const cronSendOrders = '*/12 * * * *'
+const cronSendOrders = '*/12,41 * * * *'
 const sendWaitingOrders = require('./lib/integration/send-waiting-orders')
 exports.sendWaitingOrders = functions.runWith({ timeoutSeconds: 300 })
   .pubsub.schedule(cronSendOrders).onRun(sendWaitingOrders)
 console.log(`-- Sheduled send tags to Mandae API ${cronSendOrders}`)
 
-const cronCheckTracking = '*/47 * * * *'
+const cronCheckTracking = '*/18,47 * * * *'
 const checkOrdersTracking = require('./lib/integration/check-orders-tracking')
 exports.checkOrdersTracking = functions.runWith({ timeoutSeconds: 300 })
   .pubsub.schedule(cronCheckTracking).onRun(checkOrdersTracking)
