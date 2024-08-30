@@ -95,7 +95,7 @@ module.exports = async (
         shipping_line_id: shippingLine._id,
         date_time: new Date().toISOString(),
         status,
-        notification_code: `mandae:${trackingResult.id}:${trackingResult.name}`,
+        notification_code: `mandae:${trackingResult.id}`,
         flags: ['mandae']
       },
       auth
