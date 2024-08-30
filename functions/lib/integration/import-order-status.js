@@ -23,9 +23,6 @@ const parseMandaeStatus = ({ id, name }) => {
     case '66':
       return 'returned'
   }
-  if (name === 'Encomenda coletada') {
-    return 'shipped'
-  }
   return null
 }
 
