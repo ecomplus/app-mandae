@@ -44,7 +44,7 @@ const calcDimension = (item, dimensionType) => {
 
 const checkZipCode = (destinationZip, rule) => {
   // validate rule zip range
-  if (destinationZip && rule.zip_range) {
+  if (destinationZip && rule?.zip_range) {
     const { min, max } = rule.zip_range
     return Boolean((!min || destinationZip >= min) && (!max || destinationZip <= max))
   }
@@ -137,7 +137,7 @@ exports.post = ({ appSdk }, req, res) => {
   } else if (Array.isArray(appData.warehouses) && appData.warehouses.length) {
     for (let i = 0; i < appData.warehouses.length; i++) {
       const warehouse = appData.warehouses[i]
-      if (warehouse?.zip && checkZipCode(warehouse)) {
+      if (warehouse?.zip && checkZipCode(destinationZip, warehouse)) {
         const { code } = warehouse
         if (!code) continue
         if (params.items) {
