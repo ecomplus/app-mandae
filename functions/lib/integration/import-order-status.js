@@ -43,8 +43,8 @@ module.exports = async (
     mandaeTrackingPrefix = storeId === 1024 ? 'TIA' : ''
   }
   const trackingId = mandaeTrackingPrefix +
-    invoice.number.replace(/^0+/, '') +
-    invoice.serial_number.replace(/^0+/, '')
+    invoice.number.replace(/^0+/, '').trim() +
+    invoice.serial_number.replace(/^0+/, '').trim()
   logger.info(`Tracking #${storeId} ${number} with ID ${trackingId}`)
   const { data } = await axios.get(`https://api.mandae.com.br/v3/trackings/${trackingId}`, {
     headers: { Authorization: mandaeToken },

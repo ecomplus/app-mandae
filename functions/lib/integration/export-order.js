@@ -45,8 +45,8 @@ module.exports = async (
     return
   }
   const trackingId = (mandaeOrderSettings.tracking_prefix || '') +
-    invoice.number.replace(/^0+/, '') +
-    invoice.serial_number.replace(/^0+/, '')
+    invoice.number.replace(/^0+/, '').trim() +
+    invoice.serial_number.replace(/^0+/, '').trim()
   const lineTrackingCodes = shippingLine.tracking_codes || []
   const savedTrackingCode = lineTrackingCodes.find(({ code }) => {
     return code === trackingId

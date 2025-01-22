@@ -144,7 +144,7 @@ exports.updateTokens = functions.pubsub.schedule(cron).onRun(() => {
 })
 console.log(`-- Sheduled update E-Com Plus tokens '${cron}'`)
 
-const cronSendOrders = '12,41 * * * *'
+const cronSendOrders = '16,47 * * * *'
 const sendWaitingOrders = require('./lib/integration/send-waiting-orders')
 exports.sendWaitingOrders = functions.runWith({ timeoutSeconds: 300 })
   .pubsub.schedule(cronSendOrders).onRun(sendWaitingOrders)
