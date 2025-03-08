@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/ecomplus/application-starter/compare/v1.4.0...v1.5.0) (2025-03-08)
+
+
+### Features
+
+* **calculate-shipping:** use bigger box as calculate option ([40cd424](https://github.com/ecomplus/application-starter/commit/40cd424c536dec812bdeb764212aea306ec01ed0))
+* **ecom-config:** set option to fix value in shipping rule ([580ee1a](https://github.com/ecomplus/application-starter/commit/580ee1a7e59bb4f8f03a83ba478124d04ee2afe4))
+* **route:** set route to mandae tracking ([9180c40](https://github.com/ecomplus/application-starter/commit/9180c40b66a6e6b011ea4605e4eccf3353b4478f))
+* update check tracking cron to re-export orders when tracking id (invoice) is changed ([4374571](https://github.com/ecomplus/application-starter/commit/4374571d9a8ba9e8b7322b9f25dec0d6d7b304e7))
+
+
+### Bug Fixes
+
+* also removing mandae webhook endpoint in favor of cron tracking ([2a0545b](https://github.com/ecomplus/application-starter/commit/2a0545bd3fa9b22a384fec73e12db2444db08d0e))
+* better debugging order export errors ([a457b29](https://github.com/ecomplus/application-starter/commit/a457b294a1d335b7c1ecba88a7abd133563b7cbd))
+* cleaning config options and edge cases on warehouses implementation ([31e9b0b](https://github.com/ecomplus/application-starter/commit/31e9b0b2c24168dc646c68ec39ca1138e7f9bc7d))
+* **deps:** update all non-major ([9567c54](https://github.com/ecomplus/application-starter/commit/9567c5473980d4b05b9bd698caf5b5c3254dea04))
+* **deps:** update all non-major ([#65](https://github.com/ecomplus/application-starter/issues/65)) ([254a85f](https://github.com/ecomplus/application-starter/commit/254a85f2cfb8a8d1728f01ccf23c6685ab11d2fe))
+* **deps:** update all non-major ([#67](https://github.com/ecomplus/application-starter/issues/67)) ([2d59cc5](https://github.com/ecomplus/application-starter/commit/2d59cc5059a06c420a1624769ca31d5eba0ee429))
+* **deps:** update dependency dotenv to ^16.3.1 ([57bf30b](https://github.com/ecomplus/application-starter/commit/57bf30ba2513a81691c60d00d26db9c9c1b3e6bd))
+* **deps:** update dependency dotenv to ^16.4.1 ([b3be090](https://github.com/ecomplus/application-starter/commit/b3be090f574ea6a7de50df582e9304aebced07e5))
+* **deps:** update firebase-tools to v11 ([e461a0c](https://github.com/ecomplus/application-starter/commit/e461a0cf0a3ab857f1d1bf78a8605b2122281fca))
+* do not fail order export on tag already created by id ([5e860e1](https://github.com/ecomplus/application-starter/commit/5e860e16edae8e1ddd37acd0de4396905c2ff0e6))
+* double check already saved tracking code on current order ([943ebf5](https://github.com/ecomplus/application-starter/commit/943ebf54cf775f927fbe1a78aab4fd3f791c4075))
+* export order with address borough "Centro" as default value if undefined ([ddd750e](https://github.com/ecomplus/application-starter/commit/ddd750e416d241718cc5e5ee0469752d4ceacc82))
+* fix calculate shipping with configured warehouses (check zip range) ([83db61d](https://github.com/ecomplus/application-starter/commit/83db61d8837a61de925c523e099717d8736e4782))
+* fix data updating shipping line on order export ([0b94cc0](https://github.com/ecomplus/application-starter/commit/0b94cc01071f65b85c63ded598c4b878bc5b4766))
+* format carrier doc number ([39185c2](https://github.com/ecomplus/application-starter/commit/39185c25d3f106c87095565742beb5d0e79088a2))
+* list stores from auths up to 48h ([62ba933](https://github.com/ecomplus/application-starter/commit/62ba9330de13adbf817330a26aacab2934043343))
+* list stores from auths up to 48h ([a115df6](https://github.com/ecomplus/application-starter/commit/a115df61c0074174e210f95da7b410ec705d78da))
+* parsing additional mandae status to `returned` ([7ee83d2](https://github.com/ecomplus/application-starter/commit/7ee83d27dd9b4b7c71421a3f1280d42a98d535f6))
+* prevent interrumpting orders export queue with some invalid body ([5ebf1c8](https://github.com/ecomplus/application-starter/commit/5ebf1c80f6ec848c90e21448495258003b9bde0d))
+* prevent interrumpting orders status import with some 404 ([2c41ad6](https://github.com/ecomplus/application-starter/commit/2c41ad66513f3025e6da193d322e7f2b80334977))
+* prevent running orders tracking for unecessary stores (require tracking prefix) ([1361fae](https://github.com/ecomplus/application-starter/commit/1361fae1ecf9c83c804c8bd11b9c9fadf13db02f))
+* properly sending waiting orders to mandae ([85cdeda](https://github.com/ecomplus/application-starter/commit/85cdedaf4d04cf26b72a512fb2002ef3aac9e372))
+* refactored check orders tracking routine ([1580b36](https://github.com/ecomplus/application-starter/commit/1580b362542038e649b108dec852ab7420fd62c1))
+* run orders tracking and taging twice an hour, swap orders list sort order each execution ([d681e31](https://github.com/ecomplus/application-starter/commit/d681e319d87c768af7dff4eaef928f31ab832d71))
+* stop considering "Encomenda coletada" as shipped on status import ([44e5526](https://github.com/ecomplus/application-starter/commit/44e55268126616514b65c1094924244ba465ce49))
+* **tracking-code:** request response with apropriate treatment ([0e04530](https://github.com/ecomplus/application-starter/commit/0e045302a537ee06a4622936b36e841cab8c7183))
+* **tracking-codes:** set right requested url to get specific invoice ([664cdf4](https://github.com/ecomplus/application-starter/commit/664cdf496d307fabe4c8b20fee79b2a4e91f258f))
+* trim order invoice numbers to tracking id ([afecc8c](https://github.com/ecomplus/application-starter/commit/afecc8c7c022e17adc7463a32bc1b7514688d75a))
+* **update-tracking:** cronjob with fixed array result ([446fb2c](https://github.com/ecomplus/application-starter/commit/446fb2cea81ebc8104fd3d360900394c973db3c0))
+* using tracking code object tag to prevent resending orders ([d299d0a](https://github.com/ecomplus/application-starter/commit/d299d0ab110e21bef8ff324ad85a68540f2d26b7))
+
 ## [1.4.0](https://github.com/ecomplus/application-starter/compare/v1.3.1...v1.4.0) (2023-09-08)
 
 
