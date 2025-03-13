@@ -1,45 +1,34 @@
 const axios = require('axios')
 const ecomUtils = require('@ecomplus/utils')
 
-const calcWeight = (item) => {
-  if (!item || !item.weight || !item.weight.value) {
-    return 0.000000001 // min weight needed by mandae
+const getKgWeight = (item) => {
+  if (!item.weight?.value) {
+    return 0.000000001 // min weight required by Mandae
   }
   const unit = item.weight.unit
-  let result
   switch (unit) {
-    case 'kg':
-      result = item.weight.value
-      break
     case 'g':
-      result = item.weight.value / 1000
-      break
+      return item.weight.value / 1000
     case 'mg':
-      result = item.weight.value / 1000000
+      return item.weight.value / 1000000
+    default: // kg
+      return item.weight.value
   }
-  return result
 }
 
-const calcDimension = (item, dimensionType) => {
-  if (!item || !item.dimensions || !item.dimensions[dimensionType] || !item.dimensions[dimensionType].value) {
+const getCmDimension = (item, side) => {
+  if (!item.dimensions?.[side]?.value) {
     return 0.1
   }
-  const unit = item.dimensions[dimensionType].unit || 'cm'
-  let result
+  const unit = item.dimensions[side].unit || 'cm'
   switch (unit) {
     case 'm':
-      result = item.dimensions[dimensionType].value * 100
-      break
-    case 'dm':
-      result = item.dimensions[dimensionType].value * 10
-      break
+      return item.dimensions[side].value * 100
     case 'mm':
-      result = item.dimensions[dimensionType].value / 10
-      break
-    case 'cm':
-      result = item.dimensions[dimensionType].value
+      return item.dimensions[side].value / 10
+    default: // cm
+      return item.dimensions[side].value
   }
-  return result
 }
 
 const checkZipCode = (destinationZip, rule) => {
@@ -51,42 +40,54 @@ const checkZipCode = (destinationZip, rule) => {
   return true
 }
 
-const applyShippingDiscount = (destinationZip, totalItems, shippingRules, shipping) => {
-  let value = shipping.price
+const applyShippingDiscount = ({
+  destinationZip,
+  itemsSubtotal,
+  itemsKgWeight,
+  shippingRules,
+  mandaeShipping
+}) => {
+  let value
   if (Array.isArray(shippingRules)) {
     for (let i = 0; i < shippingRules.length; i++) {
       const rule = shippingRules[i]
       if (
         rule &&
         checkZipCode(destinationZip, rule) &&
-        (rule.service === 'Todos' || rule.service === shipping.name) &&
-        (totalItems >= rule.min_amount || !rule.min_amount)
+        (rule.service === 'Todos' || rule.service === mandaeShipping.name) &&
+        (!rule.min_amount || itemsSubtotal >= rule.min_amount) &&
+        (!rule.max_kg_weight || itemsKgWeight >= rule.max_kg_weight)
       ) {
         if (rule.free_shipping) {
           value = 0
           break
-        } else if (rule.discount && !rule.fixed) {
+        } else if (typeof rule.fixed === 'number' && rule.fixed) {
+          if (value === undefined || value > rule.fixed) {
+            value = rule.fixed
+          }
+          continue
+        } else if (rule.discount) {
           let discountValue = rule.discount.value
           if (rule.discount.percentage || rule.discount.type === 'Percentual') {
-            discountValue *= (value / 100)
+            discountValue *= (mandaeShipping.price / 100)
           } else if (rule.discount.type === 'Percentual no subtotal') {
-            discountValue *= (totalItems / 100)
+            discountValue *= (itemsSubtotal / 100)
           }
           if (discountValue) {
-            value -= discountValue
+            if (value === undefined || value > mandaeShipping.price - discountValue) {
+              value = mandaeShipping.price - discountValue
+            }
             if (value < 0) {
               value = 0
+              break
             }
           }
-          break
-        } else if (rule.fixed) {
-          value = rule.fixed
-          break
+          continue
         }
       }
     }
   }
-  return value
+  return typeof value === 'number' ? value : mandaeShipping.price
 }
 
 const isDisabledService = (destinationZip, disableServices, shipping) => {
@@ -197,59 +198,37 @@ exports.post = ({ appSdk }, req, res) => {
     })
   }
 
-  let items = []
-  let totalItems = 0
-  let kgWeightBiggerBox = 0
-  const cmDimensionsBiggerBox = {}
-
-  for (const item of params.items) {
+  let mandaeItems = []
+  let itemsSubtotal = 0
+  let itemsKgWeight = 0
+  const biggerBoxCmDimensions = { height: 0.1, width: 0.1, length: 0.1 }
+  params.items.forEach((item) => {
     if (item.quantity > 0) {
-      if (appData.use_bigger_box) {
-        const cmDimensions = {}
-        kgWeightBiggerBox += (calcWeight(item) * item.quantity)
-        const { dimensions } = item
-        if (dimensions) {
-          for (const side in dimensions) {
-            const dimension = dimensions[side]
-            if (dimension && dimension.value) {
-              switch (dimension.unit) {
-                case 'm':
-                  cmDimensions[side] = dimension.value * 100
-                  break
-                case 'mm':
-                  cmDimensions[side] = dimension.value / 10
-                  break
-                default:
-                  cmDimensions[side] = dimension.value
-              }
-              if (!cmDimensionsBiggerBox[side] || cmDimensionsBiggerBox[side] < cmDimensions[side]) {
-                cmDimensionsBiggerBox[side] = cmDimensions[side]
-              }
-            }
-          }
-        }
+      const declaredValue = ecomUtils.price(item)
+      itemsSubtotal += (declaredValue * item.quantity)
+      const weight = getKgWeight(item)
+      itemsKgWeight += item.quantity * weight
+      const mandaeItem = {
+        declaredValue,
+        weight,
+        height: getCmDimension(item, 'height'),
+        width: getCmDimension(item, 'width'),
+        length: getCmDimension(item, 'length'),
+        quantity: item.quantity
       }
-      totalItems += (ecomUtils.price(item) * item.quantity)
-      items.push(
-        {
-          declaredValue: ecomUtils.price(item),
-          weight: calcWeight(item),
-          height: calcDimension(item, 'height'),
-          width: calcDimension(item, 'width'),
-          length: calcDimension(item, 'length'),
-          quantity: item.quantity
+      Object.keys(biggerBoxCmDimensions).forEach((side) => {
+        if (biggerBoxCmDimensions[side] < mandaeItem[side]) {
+          biggerBoxCmDimensions[side] = mandaeItem[side]
         }
-      )
+      })
+      mandaeItems.push(mandaeItem)
     }
-  }
-
+  })
   if (appData.use_bigger_box) {
-    items = [{
-      declaredValue: totalItems,
-      weight: kgWeightBiggerBox,
-      height: cmDimensionsBiggerBox.height || 1,
-      width: cmDimensionsBiggerBox.width || 1,
-      length: cmDimensionsBiggerBox.length || 1,
+    mandaeItems = [{
+      declaredValue: itemsSubtotal,
+      weight: itemsKgWeight || 0.001,
+      ...biggerBoxCmDimensions,
       quantity: 1
     }]
   }
@@ -264,7 +243,7 @@ exports.post = ({ appSdk }, req, res) => {
       url: mandaeUrl + resource,
       method: 'POST',
       data: {
-        items
+        items: mandaeItems
       },
       headers: {
         Authorization: mandaeToken
@@ -274,7 +253,13 @@ exports.post = ({ appSdk }, req, res) => {
     if (status === 200) {
       for (const shipping of data.data.shippingServices) {
         if (!isDisabledService(destinationZip, appData.disable_services, shipping)) {
-          let totalPrice = applyShippingDiscount(destinationZip, totalItems, appData.shipping_rules, shipping)
+          let totalPrice = applyShippingDiscount({
+            destinationZip,
+            itemsSubtotal,
+            itemsKgWeight,
+            shippingRules: appData.shipping_rules,
+            mandaeShipping: shipping
+          })
           if (appData.additional_price && totalPrice) {
             totalPrice += appData.additional_price
           }

@@ -257,6 +257,13 @@ const app = {
                 }
               }
             },
+            max_kg_weight: {
+              type: 'number',
+              minimum: 0,
+              maximum: 999999,
+              title: 'Peso máximo',
+              description: 'Peso máximo em Kg'
+            },
             min_amount: {
               type: 'number',
               minimum: 1,
