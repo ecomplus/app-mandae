@@ -156,9 +156,18 @@ const app = {
         type: 'string',
         maxLength: 255,
         title: 'Mandaê API Token',
-        description: 'Seus tokens da API podem ser acessados nas Configurações da sua conta → API dentro do aplicativo web da mandaê.'
+        description: 'Seus tokens da API podem ser acessados nas Configurações da sua conta → API'
       },
       hide: true
+    },
+    use_max_weight: {
+      schema: {
+        type: 'boolean',
+        default: false,
+        title: 'Limitar peso 50kg',
+        description: 'O pacote no cálculo será forçado ao limite 50kg mesmo que os itens passem deste peso'
+      },
+      hide: false
     },
     use_bigger_box: {
       schema: {

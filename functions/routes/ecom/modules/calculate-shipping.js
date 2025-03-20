@@ -224,7 +224,14 @@ exports.post = ({ appSdk }, req, res) => {
       mandaeItems.push(mandaeItem)
     }
   })
-  if (appData.use_bigger_box) {
+  if (appData.use_max_weight && itemsKgWeight > 50) {
+    mandaeItems = [{
+      declaredValue: itemsSubtotal,
+      weight: 50,
+      ...biggerBoxCmDimensions,
+      quantity: 1
+    }]
+  } else if (appData.use_bigger_box) {
     mandaeItems = [{
       declaredValue: itemsSubtotal,
       weight: itemsKgWeight || 0.001,
