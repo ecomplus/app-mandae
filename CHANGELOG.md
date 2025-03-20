@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/ecomplus/application-starter/compare/v1.6.0...v1.7.0) (2025-03-20)
+
+
+### Features
+
+* new option to hardset package weight up to 50kg (mandae limit) ([4bc6b43](https://github.com/ecomplus/application-starter/commit/4bc6b43e80a9119544687ee421b868be3caf3551))
+
+
+### Bug Fixes
+
+* fix checking rules max weight ([da4fd6d](https://github.com/ecomplus/application-starter/commit/da4fd6d28d7579c7c8458436fb3bdd3506bb15a4))
+
 ## [1.6.0](https://github.com/ecomplus/application-starter/compare/v1.5.1...v1.6.0) (2025-03-13)
 
 
