@@ -164,6 +164,13 @@
                 }
               }
             },
+            "min_kg_weight": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 999999,
+              "title": "Peso mínimo",
+              "description": "Peso mínimo em Kg"
+            },
             "max_kg_weight": {
               "type": "number",
               "minimum": 0,
@@ -390,5 +397,5 @@
     }
   },
   "auth_callback_uri": "https://us-central1-ecom-mandae.cloudfunctions.net/app/ecom/auth-callback",
-  "version": "1.7.0"
+  "version": "1.8.0"
 }
