@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/ecomplus/application-starter/compare/v1.7.0...v1.8.0) (2025-04-23)
+
+
+### Features
+
+* add `min_kg_weight` filter option on shipping rules ([9692b15](https://github.com/ecomplus/application-starter/commit/9692b155487f886a82c4bd09d92dd87cd325c1e7))
+
 ## [1.7.0](https://github.com/ecomplus/application-starter/compare/v1.6.0...v1.7.0) (2025-03-20)
 
 
